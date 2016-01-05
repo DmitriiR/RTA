@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="Chris-Mass Adventures.cpp" />
     <ClCompile Include="RenderContext.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderMaterial.cpp" />
     <ClCompile Include="RenderNode.cpp" />
     <ClCompile Include="RenderShape.cpp" />
