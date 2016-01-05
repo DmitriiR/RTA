@@ -1,6 +1,7 @@
 #pragma once
+#include "RenderNode.h"
 
-class RenderMaterial
+class RenderMaterial : RenderNode
 {
 public:
 	RenderMaterial();

@@ -1,6 +1,7 @@
 #pragma once
+#include "RenderNode.h"
 
-class RenderShape
+class RenderShape : RenderNode
 {
 public:
 	RenderShape();

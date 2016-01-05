@@ -6,6 +6,8 @@ public:
 	RenderNode();
 	~RenderNode();
 
+	RenderNode* next;
+
 private:
 
 };

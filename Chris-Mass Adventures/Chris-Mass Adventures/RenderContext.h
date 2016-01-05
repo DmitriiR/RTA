@@ -1,6 +1,7 @@
 #pragma once
+#include "RenderNode.h"
 
-class RenderContext
+class RenderContext : RenderNode
 {
 public:
 	RenderContext();
