@@ -2,10 +2,10 @@
 
 class RenderNode;
 
+
 typedef void(*RenderFunc)(RenderNode &rNode);
 class RenderNode
 {
-	
 public:
 
 	RenderNode * next = nullptr;
@@ -13,9 +13,8 @@ public:
 
 	RenderNode();
 	~RenderNode();
-	
-	inline void renderProcess() { func(*this); }
-	
+
+	inline void renderProcess() { func(*this); };
 
 private:
 
