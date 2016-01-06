@@ -3,7 +3,7 @@
 #include "RenderNode.h"
 
 
-DXGI_MODE_DESC				bufferDesctoFill;
+DXGI_MODE_DESC bufferDesctoFill;
 
 RendererD3D::Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 {
