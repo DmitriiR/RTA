@@ -1,3 +1,4 @@
+#pragma once
 
 #include <DirectXMath.h>
 typedef unsigned int		uint;

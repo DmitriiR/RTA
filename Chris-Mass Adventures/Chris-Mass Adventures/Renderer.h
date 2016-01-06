@@ -1,17 +1,16 @@
 #pragma once
 
+#include "stdafx.h"
 #include "RenderNode.h"
 #include <D3D11.h>
 #include "SharedDefines.h"
 
-
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
-class RenderSet;
+class RenderSet; // forward calss declaration 
 
 namespace RendererD3D
 {
-
 	class Renderer
 	{
 	public:
@@ -38,6 +37,8 @@ namespace RendererD3D
 
 		static void Shutdown();
 
+		Renderer();
+		~Renderer();
 		static void Render(RenderSet &set);
 		// in case we need to override the renderfunction 
 		static void Render(RenderSet &set, RenderFunc renderFuncOverride);
@@ -61,8 +62,7 @@ namespace RendererD3D
 		inline static UINT GetResolutionHeight() { return resolutionHeight; }
 
 
-		Renderer();
-		~Renderer();
+		
 	private:
 		static UINT resolutionWidth;
 		static UINT resolutionHeight;
