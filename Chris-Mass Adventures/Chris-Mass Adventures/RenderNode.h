@@ -2,21 +2,19 @@
 
 class RenderNode;
 
+typedef void(*RenderFunc)(RenderNode &curNode);
 
-typedef void(*RenderFunc)(RenderNode &rNode);
 class RenderNode
 {
+protected: RenderNode * next;
 public:
+	RenderNode::RenderNode(){ next = nullptr; }
 
-	RenderNode * next = nullptr;
 	RenderFunc func;
 
-	RenderNode();
-	~RenderNode();
+	void Process(){ func(*this); }
 
-	inline void renderProcess() { func(*this); };
-
-private:
+	RenderNode *GetNext(void) { return next; }
+	void SetNext(RenderNode* _next){ next = _next; }
 
 };
-
