@@ -116,6 +116,10 @@ namespace RendererD3D
 		theScreenViewport.MaxDepth = 1;
 
 		theContextPtr->RSSetViewports(1, &theScreenViewport);
-	
+		
+		// flush the screen
+		float color_array[4] = { 0.0f, 0, 0.2f, 1.0f };
+		theContextPtr->ClearRenderTargetView(theRenderTargetViewPtr, color_array);
+
 	}
 }
