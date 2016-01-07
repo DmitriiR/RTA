@@ -56,9 +56,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		}
 		// primary update loop goes here 
 		rendererInstance->Present();
-
 	}
-
 	return (int) msg.wParam;
 }
 

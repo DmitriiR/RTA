@@ -12,7 +12,7 @@ public:
 
 	RenderFunc func;
 
-	void Process(){ func(*this); }
+	void RenderProcess(){ func(*this); }
 
 	RenderNode *GetNext(void) { return next; }
 	void SetNext(RenderNode* _next){ next = _next; }

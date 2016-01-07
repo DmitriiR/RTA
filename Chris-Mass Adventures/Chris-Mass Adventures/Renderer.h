@@ -4,10 +4,11 @@
 #include "RenderNode.h"
 #include <D3D11.h>
 #include "SharedDefines.h"
+#include "RenderSet.h"
 #include "vld.h"
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
-class RenderSet; // forward calss declaration 
+//class RenderSet; // forward calss declaration 
 
 namespace RendererD3D
 {
@@ -24,7 +25,7 @@ namespace RendererD3D
 		static ID3D11DepthStencilView	* theDepthStencilViewPtr;
 		static D3D11_VIEWPORT			  theScreenViewport;
 		static ID3D11ShaderResourceView * GetDepthSRV();
-
+		//static ID3D11ShaderResourceView * theDepthStencilSRVPtr;
 		static cbPerObject thePerObjectData;
 		static ID3D11Buffer *thePerObjectCBuffer;
 		static void SetPerObjectData(DirectX::XMFLOAT4X4 &mMVP, DirectX::XMFLOAT4X4 &mWorld);
@@ -37,13 +38,19 @@ namespace RendererD3D
 		//static void Shutdown();
 
 		Renderer();
-		~Renderer() 
-		{
+		~Renderer();
+		
+		static void Render(RenderSet &set)
+		{ 
 			
-				
-			
-		};
-		static void Render(RenderSet &set);
+    		RenderNode * currNode = set.GetHead();
+			while (currNode != nullptr)
+			{
+				currNode->RenderProcess();
+				currNode = currNode->GetNext();
+			}
+		}
+
 		// in case we need to override the renderfunction 
 		static void Render(RenderSet &set, RenderFunc renderFuncOverride);
 
@@ -87,12 +94,24 @@ namespace RendererD3D
 			//ReleaseCOM(chainBuffer);
 		}
 
+		void Renderer::BuildPerObjectConstantBuffers()
+		{
+			// per object CBuffer
+			D3D11_BUFFER_DESC bd;
+			ZeroMemory(&bd, sizeof(bd));
+			bd.Usage = D3D11_USAGE_DYNAMIC;
+			bd.ByteWidth = sizeof(cbPerObject);
+			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			theDevicePtr->CreateBuffer(&bd, nullptr, &thePerObjectCBuffer);
+		}
+
 		
 	private:
 		static UINT resolutionWidth;
 		static UINT resolutionHeight;
 
-		static ID3D11ShaderResourceView *theDepthStencilSRVPtr;
+		
 
 	};
 

@@ -1,4 +1,4 @@
-#pragma once 
+
 #include "stdafx.h"
 #include "Renderer.h"
 #include "RenderNode.h"
@@ -78,8 +78,8 @@ namespace RendererD3D
 		hr = theDevicePtr->CreateRenderTargetView(theBackBufferPtr, // we give it the pointer
 												  NULL,
 												  &theRenderTargetViewPtr);
-
-		// Renderer::BuildPerObjectConstantBuffers();   /// << function to write here
+		
+		//Renderer::BuildPerObjectConstantBuffers();   /// << function to write here
 
 		///////////////////////////////////////////////////////////
 		// Create the depth stencil view
