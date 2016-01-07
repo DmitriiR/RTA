@@ -100,6 +100,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hInst = hInstance; // Store instance handle in our global variable
 
+   // My window Addition 
+   RECT window_size = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+   AdjustWindowRect(&window_size, WS_OVERLAPPEDWINDOW, true);
+   // end my edit 
+
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 

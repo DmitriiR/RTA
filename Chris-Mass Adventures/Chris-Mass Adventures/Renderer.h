@@ -30,7 +30,6 @@ namespace RendererD3D
 		static void SetPerObjectData(DirectX::XMFLOAT4X4 &mMVP, DirectX::XMFLOAT4X4 &mWorld);
 		static void SetPerObjectData(DirectX::XMMATRIX &mMVP, DirectX::XMMATRIX &mWorld);
 
-
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 
 		static void SetResolution(UINT _width, UINT _height);

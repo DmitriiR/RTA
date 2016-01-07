@@ -10,8 +10,13 @@ namespace RendererD3D
 	ID3D11Device			* Renderer::theDevicePtr = 0;
 	ID3D11DeviceContext		* Renderer::theContextPtr = 0;
 	IDXGISwapChain			* Renderer::theSwapChainPtr = 0;
+	ID3D11Texture2D			* Renderer::theBackBufferPtr = 0;
+	D3D11_VIEWPORT		      Renderer::theScreenViewport;
+	ID3D11RenderTargetView	* Renderer::theRenderTargetViewPtr = 0;
+	ID3D11Texture2D			* Renderer::theDepthStencilBufferPtr = 0;
+	ID3D11DepthStencilView	* Renderer::theDepthStencilViewPtr = 0;
 
-	void RendererD3D::Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
+	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 	{
 		//bool isFullscreen;
 
@@ -47,8 +52,8 @@ namespace RendererD3D
 			D3D_FEATURE_LEVEL_9_1,
 		};
 		D3D_FEATURE_LEVEL pFeatureLevel;
+		//HRESULT hr;
 		
-		// this will happen later on 
 		HRESULT hr = D3D11CreateDeviceAndSwapChain(
 			NULL,						    // this can be used to chose the default adapter
 			D3D_DRIVER_TYPE_HARDWARE,		// this where we can pug in your own special rasterizer, not used in the modern day.
@@ -57,23 +62,24 @@ namespace RendererD3D
 			pFeatures,						// this will work in the enum for backwards compatibility, pass null in here.
 			6,								// the amount levels above you uses
 			D3D11_SDK_VERSION,				// gives you the version
-			&swap_chain_desc,				// 
+			&swap_chain_desc,				 
 			&theSwapChainPtr,
 			&theDevicePtr,
 			&pFeatureLevel,
 			&theContextPtr);
-		/*
+
+
 		
 		// fill the back buffer
 		hr = theSwapChainPtr->GetBuffer(0,
-		__uuidof(ID3D11Texture2D), // what type of param you are looking for
-		(void**)&theBackBufferPtr);     // _out - always a void pointer
+		__uuidof(ID3D11Texture2D),			// what type of param you are looking for
+		(void**)&theBackBufferPtr);			// _out - always a void pointer
 
 		hr = theDevicePtr->CreateRenderTargetView(theBackBufferPtr, // we give it the pointer
-		NULL,
-		&theRenderTargetViewPtr);
+												  NULL,
+												  &theRenderTargetViewPtr);
 
-		//Renderer::BuildPerObjectConstantBuffers();
+		// Renderer::BuildPerObjectConstantBuffers();   /// << function to write here
 
 		///////////////////////////////////////////////////////////
 		// Create the depth stencil view
@@ -84,8 +90,8 @@ namespace RendererD3D
 		descDSV.Flags = 0;
 
 		D3D11_TEXTURE2D_DESC descDepth;
-		descDepth.Width = resolutionWidth;
-		descDepth.Height = resolutionHeight;
+		descDepth.Width = resWidth;
+		descDepth.Height = resHeight;
 		descDepth.MipLevels = 1;
 		descDepth.ArraySize = 1;
 		descDepth.Format = DXGI_FORMAT_D32_FLOAT;	// we shuld start with the default, wec an use more spcific type to create views
@@ -104,13 +110,12 @@ namespace RendererD3D
 
 		theScreenViewport.TopLeftX = 0;
 		theScreenViewport.TopLeftY = 0;
-		theScreenViewport.Width = (FLOAT)resolutionWidth;
-		theScreenViewport.Height = (FLOAT)resolutionHeight;
+		theScreenViewport.Width = (FLOAT)resWidth;
+		theScreenViewport.Height = (FLOAT)resHeight;
 		theScreenViewport.MinDepth = 0;
 		theScreenViewport.MaxDepth = 1;
 
-
 		theContextPtr->RSSetViewports(1, &theScreenViewport);
-		*/
+	
 	}
 }

@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "fbxsdk.h"
+#include "stdafx.h"
 
-//FbxManager* manager = FbxManager::Create();
+#define WINDOW_WIDTH 256
+#define WINDOW_HEIGHT 512
