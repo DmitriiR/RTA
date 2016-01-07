@@ -11,6 +11,9 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
+// Our oubjects 
+RendererD3D::Renderer * rendererInstance; 
+
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -51,6 +54,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		// primary update loop goes here 
+		rendererInstance->Present();
+
 	}
 
 	return (int) msg.wParam;
@@ -112,6 +118,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   // OUR Initialization code goes here
+   rendererInstance->Initialize(hWnd, WINDOW_WIDTH, WINDOW_HEIGHT);
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -147,7 +155,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:
+			rendererInstance->Shutdown(); // OUR RENDERER Shutdown
 			DestroyWindow(hWnd);
+
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);

@@ -4,7 +4,7 @@
 #include "RenderNode.h"
 #include <D3D11.h>
 #include "SharedDefines.h"
-
+#include "vld.h"
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
 class RenderSet; // forward calss declaration 
@@ -34,10 +34,15 @@ namespace RendererD3D
 
 		static void SetResolution(UINT _width, UINT _height);
 
-		static void Shutdown();
+		//static void Shutdown();
 
 		Renderer();
-		~Renderer();
+		~Renderer() 
+		{
+			
+				
+			
+		};
 		static void Render(RenderSet &set);
 		// in case we need to override the renderfunction 
 		static void Render(RenderSet &set, RenderFunc renderFuncOverride);
@@ -54,12 +59,33 @@ namespace RendererD3D
 
 		inline static void Present(UINT syncInterval = 0, UINT flags = 0)
 		{
-			theSwapChainPtr->Present(syncInterval, flags);
+			if (theSwapChainPtr)
+			{
+			     theSwapChainPtr->Present(syncInterval, flags);
+			}
 		}
 
 		inline static UINT GetResolutionWidth() { return resolutionWidth; }
 		inline static UINT GetResolutionHeight() { return resolutionHeight; }
 
+		inline static void Renderer::Shutdown()
+		{
+			theSwapChainPtr->SetFullscreenState(false, 0);
+			// release the d3d object and device
+			ReleaseCOM(theDepthStencilViewPtr);
+			ReleaseCOM(theDepthStencilBufferPtr);
+			ReleaseCOM(theRenderTargetViewPtr);
+			ReleaseCOM(theBackBufferPtr);
+			//ReleaseCOM(thePerObjectCBuffer);
+			//ReleaseCOM(thePerSkinnedObjectCBuffer);
+			//ReleaseCOM(theDepthStencilSRVPtr);
+			ReleaseCOM(theSwapChainPtr);
+			ReleaseCOM(theContextPtr);
+			ReleaseCOM(theDevicePtr);
+
+			// my releases 
+			//ReleaseCOM(chainBuffer);
+		}
 
 		
 	private:
@@ -70,12 +96,12 @@ namespace RendererD3D
 
 	};
 
-	Renderer::Renderer()
-	{
-	}
-
-	Renderer::~Renderer()
-	{
-	}
+	//Renderer::Renderer()
+	//{
+	//}
+	//
+	//Renderer::~Renderer()
+	//{
+	//}
 
 }
