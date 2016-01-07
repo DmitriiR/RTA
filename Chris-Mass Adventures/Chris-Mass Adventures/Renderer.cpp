@@ -52,8 +52,8 @@ namespace RendererD3D
 			D3D_FEATURE_LEVEL_9_1,
 		};
 		D3D_FEATURE_LEVEL pFeatureLevel;
-		HRESULT hr;
-		/*
+		//HRESULT hr;
+		
 		HRESULT hr = D3D11CreateDeviceAndSwapChain(
 			NULL,						    // this can be used to chose the default adapter
 			D3D_DRIVER_TYPE_HARDWARE,		// this where we can pug in your own special rasterizer, not used in the modern day.
@@ -67,7 +67,7 @@ namespace RendererD3D
 			&theDevicePtr,
 			&pFeatureLevel,
 			&theContextPtr);
-*/
+
 
 		
 		// fill the back buffer
