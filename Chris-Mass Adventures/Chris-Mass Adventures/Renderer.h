@@ -32,7 +32,7 @@ namespace RendererD3D
 		static void SetPerObjectData(DirectX::XMMATRIX &mMVP, DirectX::XMMATRIX &mWorld);
 
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
-
+		void LoadObjects();
 		static void SetResolution(UINT _width, UINT _height);
 
 		//static void Shutdown();
@@ -66,6 +66,8 @@ namespace RendererD3D
 
 		inline static void Present(UINT syncInterval = 0, UINT flags = 0)
 		{
+			
+
 			if (theSwapChainPtr)
 			{
 			     theSwapChainPtr->Present(syncInterval, flags);

@@ -57,6 +57,12 @@
     <ClInclude Include="RenderSet.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderMesh.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

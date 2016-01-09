@@ -84,9 +84,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chris-Mass Adventures.h" />
+    <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderMaterial.h" />
+    <ClInclude Include="RenderMesh.h" />
     <ClInclude Include="RenderNode.h" />
     <ClInclude Include="RenderSet.h" />
     <ClInclude Include="RenderShape.h" />

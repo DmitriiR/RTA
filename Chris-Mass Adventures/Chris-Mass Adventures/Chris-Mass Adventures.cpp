@@ -118,6 +118,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
    // OUR Initialization code goes here
    rendererInstance->Initialize(hWnd, WINDOW_WIDTH, WINDOW_HEIGHT);
+   rendererInstance->LoadObjects();
+   
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

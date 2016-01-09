@@ -122,4 +122,9 @@ namespace RendererD3D
 		theContextPtr->ClearRenderTargetView(theRenderTargetViewPtr, color_array);
 
 	}
+
+	void Renderer::LoadObjects()
+	{
+		
+	}
 }
