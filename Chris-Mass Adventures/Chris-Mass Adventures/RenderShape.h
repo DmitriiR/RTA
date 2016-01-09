@@ -13,4 +13,8 @@ public:
 
 	void ApplyWorldMatrix(XMFLOAT4X4 matrix)  { XMMatrixMultiply(XMLoadFloat4x4(&matrix), XMLoadFloat4x4(&worldMatrix)); }
 
+	void RenderShape::AddToContextSet(RenderContext *contextPtr)
+	{
+		contextPtr->AddRenderNode(this);
+	}
 };
