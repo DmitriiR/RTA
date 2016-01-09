@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "Chris-Mass Adventures.h"
-
+#include "fbxsdk.h"
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -45,6 +45,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CHRISMASSADVENTURES));
+
+	//FBX Manager initialization
+	FbxManager* manager = FbxManager::Create();
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))

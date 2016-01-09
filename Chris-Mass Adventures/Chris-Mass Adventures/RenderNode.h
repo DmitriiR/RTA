@@ -10,9 +10,9 @@ protected: RenderNode * next;
 public:
 	RenderNode::RenderNode(){ next = nullptr; }
 
-	RenderFunc func;
+	RenderFunc Renderfunc;
 
-	void Process(){ func(*this); }
+	void RenderProcess(){ Renderfunc(*this); }
 
 	RenderNode *GetNext(void) { return next; }
 	void SetNext(RenderNode* _next){ next = _next; }
