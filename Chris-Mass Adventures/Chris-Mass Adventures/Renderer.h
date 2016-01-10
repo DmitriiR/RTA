@@ -64,6 +64,10 @@ namespace RendererD3D
 			theContextPtr->ClearDepthStencilView(theDepthStencilViewPtr, clearFlags, depth, stencil);
 		}
 
+		inline static void Update()
+		{
+			//rendererInstance->Render();
+		}
 		inline static void Present(UINT syncInterval = 0, UINT flags = 0)
 		{
 			

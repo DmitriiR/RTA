@@ -13,8 +13,8 @@ protected:
 	RenderMesh &mesh;
 	//Sphere boundingVolume
 
+	
 	XMFLOAT4X4 worldMatrix;
-
 public:
 	RenderShape();
 	~RenderShape();
@@ -25,6 +25,7 @@ public:
 	{
 		contextPtr->AddRenderNode(this);
 	}
+
 	inline DirectX::XMFLOAT4X4 &GetWorldMatrix(void) { return worldMatrix; }
 	inline DirectX::XMFLOAT4X4 *GetWorldMatrixPtr(void) { return &worldMatrix; }
 
@@ -44,14 +45,20 @@ public:
 		RendererD3D::Renderer::SetPerObjectData(XMLoadFloat4x4(shapePtr.GetWorldMatrixPtr()) * XMLoadFloat4x4(&tempMat),
 									XMLoadFloat4x4(shapePtr.GetWorldMatrixPtr()));
 	   
-		RendererD3D::Renderer::theContextPtr->DrawIndexed(3 * shapePtr.mesh->GetPrimitiveCount(),
-									shapePtr.mesh->GetStartIndex(),
-									shapePtr.GetRenderMesh()->GetStartVertex());
+		RendererD3D::Renderer::theContextPtr->DrawIndexed(3 * shapePtr.mesh.GetPrimitiveCount(),
+									shapePtr.mesh.GetStartIndex(),
+									shapePtr.mesh.GetStartVertex());
 		
 	}
-	inline static void PrimitiveRenderFunc(RenderNode &node)
+
+	inline void RenderShape::Initialize( XMFLOAT4X4 *localMatrixPtr)
 	{
-	
+		//SetRenderFormHandle(formHandles);
+
+		if (localMatrixPtr != 0)
+			worldMatrix = *localMatrixPtr;
+
+		func = IndexedPrimitiveRenderFunc;
 	}
 	
 	
