@@ -56,7 +56,7 @@ public:
 		RenderContext & contPtr = (RenderContext &)node;
 		
 		RendererD3D::Renderer::theContextPtr->IASetIndexBuffer(IndexBuffer::GetReference().GetIndices(), DXGI_FORMAT_R32_UINT, 0);
-		
+	    
 		//RendererD3D::Renderer::theContextPtr->VSSetShader(contPtr.GetRenderStageTechnique()->GetPass(0)->GetVertexShader(), NULL, NULL);
 		//RendererD3D::Renderer::theContextPtr->PSSetShader(contPtr.GetRenderStageTechnique()->GetPass(0)->GetPixelShader(), NULL, NULL);
 		//RendererD3D::Renderer::theContextPtr->GSSetShader(contPtr.GetRenderStageTechnique()->GetPass(0)->GetGeometryShader(), NULL, NULL);

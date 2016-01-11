@@ -52,12 +52,16 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			DispatchMessage(&msg); 
 		}
-		// primary update loop goes here 
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		// OUR Primary Loop 
 		rendererInstance->Update();
 		rendererInstance->Present();
+		/////////////////////////////////////////////////////////////////////////////////////////////		 
 	}
+	
+
 	return (int) msg.wParam;
 }
 
@@ -117,10 +121,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   /////////////////////////////////////////////////////////////////////////////////////////////
    // OUR Initialization code goes here
    rendererInstance->Initialize(hWnd, WINDOW_WIDTH, WINDOW_HEIGHT);
    rendererInstance->LoadObjects();
-   
+   /////////////////////////////////////////////////////////////////////////////////////////////
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -170,6 +175,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
+
+		rendererInstance->Shutdown(); // OUR RENDERER Shutdown
 		PostQuitMessage(0);
 		break;
 	default:

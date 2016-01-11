@@ -34,7 +34,8 @@ public:
 		RenderShape & shapePtr = (RenderShape &)node;
 
 		XMFLOAT4X4 tempMat;
-
+		
+		
 		//for (size_t i = 0; i < 4; i++)
 		//{
 		//	for (size_t j = 0; j < 4; j++)

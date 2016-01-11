@@ -4,16 +4,32 @@
 #include "RenderNode.h"
 #include <D3D11.h>
 #include "SharedDefines.h"
-#include "RenderSet.h"
 #include "vld.h"
+#include <math.h>
+#include "RenderSet.h"
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
 //class RenderSet; // forward calss declaration 
+
+using namespace DirectX;
 
 namespace RendererD3D
 {
 	class Renderer
 	{
+	private:
+		static UINT resolutionWidth;
+		static UINT resolutionHeight;
+
+		// view projection matrix loading 
+		XMMATRIX viewProjection;
+		XMMATRIX view;
+		XMMATRIX projection;
+		XMMATRIX world;
+		float nearClip;
+		float farClip;
+		//EDRendererD3D::RenderShapeTarget viewPortQuad;
+
 	public:
 
 		static ID3D11Device				* theDevicePtr;
@@ -31,8 +47,8 @@ namespace RendererD3D
 		static void SetPerObjectData(DirectX::XMFLOAT4X4 &mMVP, DirectX::XMFLOAT4X4 &mWorld);
 		static void SetPerObjectData(DirectX::XMMATRIX &mMVP, DirectX::XMMATRIX &mWorld);
 
-		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		void LoadObjects();
+		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		static void SetResolution(UINT _width, UINT _height);
 
 		//static void Shutdown();
@@ -42,7 +58,6 @@ namespace RendererD3D
 		
 		static void Render(RenderSet &set)
 		{ 
-			
     		RenderNode * currNode = set.GetHead();
 			while (currNode != nullptr)
 			{
@@ -70,8 +85,6 @@ namespace RendererD3D
 		}
 		inline static void Present(UINT syncInterval = 0, UINT flags = 0)
 		{
-			
-
 			if (theSwapChainPtr)
 			{
 			     theSwapChainPtr->Present(syncInterval, flags);
@@ -83,7 +96,7 @@ namespace RendererD3D
 
 		inline static void Renderer::Shutdown()
 		{
-			theSwapChainPtr->SetFullscreenState(false, 0);
+			//theSwapChainPtr->SetFullscreenState(false, 0);
 			// release the d3d object and device
 			ReleaseCOM(theDepthStencilViewPtr);
 			ReleaseCOM(theDepthStencilBufferPtr);
@@ -100,33 +113,37 @@ namespace RendererD3D
 			//ReleaseCOM(chainBuffer);
 		}
 
-		void Renderer::BuildPerObjectConstantBuffers()
+		
+
+		 inline const XMMATRIX Renderer::GetViewProjection() const
 		{
-			// per object CBuffer
-			D3D11_BUFFER_DESC bd;
-			ZeroMemory(&bd, sizeof(bd));
-			bd.Usage = D3D11_USAGE_DYNAMIC;
-			bd.ByteWidth = sizeof(cbPerObject);
-			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			theDevicePtr->CreateBuffer(&bd, nullptr, &thePerObjectCBuffer);
+			return viewProjection;			
+		}
+		 inline const XMMATRIX Renderer::GetActiveWorld() const
+		{
+			return this->world;
+		}
+		 inline const XMMATRIX Renderer::GetActiveView() const
+		{
+			return this->view;
+		}
+		 inline const XMMATRIX Renderer::GetActiveProjection() const
+		{
+			return this->projection;
 		}
 
-		
-	private:
-		static UINT resolutionWidth;
-		static UINT resolutionHeight;
-
-		
-
+		 void Renderer::BuildPerObjectConstantBuffers()
+		 {
+			 // per object CBuffer
+			 D3D11_BUFFER_DESC bd;
+			 ZeroMemory(&bd, sizeof(bd));
+			 bd.Usage = D3D11_USAGE_DYNAMIC;
+			 bd.ByteWidth = sizeof(cbPerObject);
+			 bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			 bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			 theDevicePtr->CreateBuffer(&bd, nullptr, &thePerObjectCBuffer);
+		 }
 	};
 
-	//Renderer::Renderer()
-	//{
-	//}
-	//
-	//Renderer::~Renderer()
-	//{
-	//}
 
 }

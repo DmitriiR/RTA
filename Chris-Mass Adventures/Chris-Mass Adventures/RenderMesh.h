@@ -20,9 +20,6 @@ class RenderMesh
 
 	//EDMath::Aabb				boundingAabb;
 
-	
-
-
 public:
 	RenderMesh();
 	~RenderMesh();
@@ -36,7 +33,8 @@ public:
 	inline unsigned int GetStartIndex() const { return startIndex; }
 	inline unsigned int GetVertCount() const { return numVertices; }
 	inline unsigned int GetStartVertex() const { return startVertex; }
-
+	
+	// classs handles the main pbject loading 
 	inline RenderMesh *RenderMesh::Load(const char* pInFileName, const char* pVertexFormat)
 	{
 		std::string temp;// = ContentManager::theContentPath;
@@ -59,6 +57,17 @@ public:
 		return resultPtr;
 
 	}
+
+	template <typename VertexFormat>
+	void RenderMesh::CreateIndexedMesh(const VertexFormat *verts, unsigned int numVerts, const unsigned int *indices, unsigned int numIndices,
+		D3D_PRIMITIVE_TOPOLOGY primitiveType)
+	{
+		CreateMesh<VertexFormat>(verts, numVerts, primitiveType);
+		numPrimitives = numIndices / 3;
+
+		startIndex = IndexBuffer::GetReference().AddIndices(indices, numIndices);
+	}
+
 
 
 private:

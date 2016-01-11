@@ -3,7 +3,6 @@
 class RenderNode;
 
 typedef void(*RenderFunc)(RenderNode &curNode);
-
 class RenderNode
 {
 protected: RenderNode * next;

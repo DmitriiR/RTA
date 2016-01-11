@@ -116,14 +116,30 @@ namespace RendererD3D
 
 		theContextPtr->RSSetViewports(1, &theScreenViewport);
 		
+		// Clearing the depth stencil 
+    	theContextPtr->ClearDepthStencilView(RendererD3D::Renderer::theDepthStencilViewPtr, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL,
+			1.0f, 0.0f);
+
+		//ClearDepthAndStencilTarget
 		// flush the screen
 		float color_array[4] = { 0.0f, 0, 0.2f, 1.0f };
 		theContextPtr->ClearRenderTargetView(theRenderTargetViewPtr, color_array);
 
+		// input layout POS, NRM, UV 
+		const UINT VERTEX_POS_numElements = 3;
+		D3D11_INPUT_ELEMENT_DESC vertexPosDesc[VERTEX_POS_numElements] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL"  , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
+		};
+		
+		
 	}
 
 	void Renderer::LoadObjects()
 	{
-		
+
 	}
 }
