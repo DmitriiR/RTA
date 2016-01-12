@@ -55,6 +55,6 @@ CONSTANT_BUFFER_END
 
 struct CAMERA
 {
-	float4x4 view_matrix;
-	float4x4 projection_matrix;
+	DirectX::XMMATRIX view_matrix;
+	DirectX::XMMATRIX projection_matrix;
 };

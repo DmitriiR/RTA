@@ -28,12 +28,17 @@ namespace RendererD3D
 
 
 	// cameras 
-	//CAMERA camera;
+	CAMERA camera;
+	float cam_View_Angle = 100.0f;
+
 
 	// buffers 
 	//ID3D11Buffer				* Renderer::m_CB_Camera = nullptr ;
 	ID3D11Buffer				* Renderer::IndexBufferCube = nullptr;
 	ID3D11Buffer				* Renderer::VertBufferCube = nullptr;
+
+	ID3D11Buffer				* m_CB_Camera = nullptr;
+
 
 	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 	{
@@ -153,6 +158,7 @@ namespace RendererD3D
 			{ "NORMAL"  , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
+    	theDevicePtr->CreateInputLayout(vertexPosDesc, 3, VS_Default, sizeof(VS_Default), &pInputLayout);
 		
 		
 		////////////////////////////////////////////////////////////////////////////////
@@ -160,7 +166,6 @@ namespace RendererD3D
 		theDevicePtr->CreatePixelShader(PixelShader, sizeof(PixelShader), NULL, &PS_Default);
 		//          vertex 
 		theDevicePtr->CreateVertexShader(VertexShader, sizeof(VertexShader), NULL, &VS_Default);
-    	theDevicePtr->CreateInputLayout(vertexPosDesc, 3, VS_Default, sizeof(VS_Default), &pInputLayout);
 
 		//// camera 
 		XMVECTOR eyePos = XMVectorSet(0.0f, 4.0f, -2.0f, 1.0f);
@@ -168,10 +173,11 @@ namespace RendererD3D
 		XMVECTOR worldUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 		
 
-		//camera.view_matrix       = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
-		//camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), resWidth / resHeight, 0.1f, 2000.0f);
-		//
-		//CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
+
+		camera.view_matrix       = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
+		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), resWidth / resHeight, 0.1f, 2000.0f);
+		
+		CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
 
 
 		// model code for testing 
@@ -286,7 +292,7 @@ namespace RendererD3D
 		ReleaseCOM(theContextPtr);
 		ReleaseCOM(theDevicePtr);
 
-		//ReleaseCOM(m_CB_Camera);
+		ReleaseCOM(m_CB_Camera);
 		ReleaseCOM(IndexBufferCube);
 		ReleaseCOM(VertBufferCube);
 		ReleaseCOM(pInputLayout);
