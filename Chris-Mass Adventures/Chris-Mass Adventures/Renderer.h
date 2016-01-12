@@ -6,7 +6,20 @@
 #include "SharedDefines.h"
 #include "vld.h"
 #include <math.h>
+#include <vector>
 #include "RenderSet.h"
+#include "RenderNode.h"
+#include "Camera.h"
+
+#include "PixelShader.csh"
+#include "VertexShader.csh"
+// testing stuff, not going into the final engine as an include for this file
+#include "RenderMesh.h"
+
+
+//#include "RenderShape.h"
+//#include "RenderContext.h"
+
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
 //class RenderSet; // forward calss declaration 
@@ -30,6 +43,8 @@ namespace RendererD3D
 		float farClip;
 		//EDRendererD3D::RenderShapeTarget viewPortQuad;
 
+		
+
 	public:
 
 		static ID3D11Device				* theDevicePtr;
@@ -41,13 +56,33 @@ namespace RendererD3D
 		static ID3D11DepthStencilView	* theDepthStencilViewPtr;
 		static D3D11_VIEWPORT			  theScreenViewport;
 		static ID3D11ShaderResourceView * GetDepthSRV();
+		static ID3D11InputLayout		*        pInputLayout;
 		//static ID3D11ShaderResourceView * theDepthStencilSRVPtr;
 		static cbPerObject thePerObjectData;
 		static ID3D11Buffer *thePerObjectCBuffer;
+
+		
+		
+		// buffers 
+		//static ID3D11Buffer				* m_CB_Camera ;
+		static ID3D11Buffer				* IndexBufferCube ;
+		static ID3D11Buffer				* VertBufferCube ;
+
+		// temp objects 
+		//RenderShape cube;
+		//RenderMesh mesh;
+		//RenderNode cubeNode;
+		// Functions
+		std::vector<RenderNode * > renderNodePtr;
+		//std::vector<RenderContext * > renderContextPtr;
+
 		static void SetPerObjectData(DirectX::XMFLOAT4X4 &mMVP, DirectX::XMFLOAT4X4 &mWorld);
 		static void SetPerObjectData(DirectX::XMMATRIX &mMVP, DirectX::XMMATRIX &mWorld);
-
-		void LoadObjects();
+		
+		template <typename Type>// takes the source data, and makes a buffer, Buffer type defines  vertes, index or constant buffer
+		static HRESULT CreateConstantBuffer(const Type& source, ID3D11Buffer ** buffer, UINT bindFlag_type);
+		static void LoadObjects();
+		static void MakeCube();
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		static void SetResolution(UINT _width, UINT _height);
 
@@ -81,7 +116,35 @@ namespace RendererD3D
 
 		inline static void Update()
 		{
-			//rendererInstance->Render();
+			//**********************************      Cube      ***************************************\
+				/// Pipeline																				 |
+			//XMMATRIX viewmatrix_copy = XMMatrixInverse(nullptr, camera.view_matrix);
+			
+			//cube.worldMatrix = XMMatrixIdentity();
+			///// Input Input-Assembler 
+			//unsigned int stride = sizeof(VERTEX);
+			//unsigned int offset = 0;
+			////ID3D11Buffer* pNullBuffer = nullptr;
+			//Renderer::theContextPtr->IASetIndexBuffer(IndexBufferCube, DXGI_FORMAT_R32_UINT, 0);						// model index buffer
+			//Renderer::theContextPtr->IASetVertexBuffers(0, 1, &VertBufferCube, &stride, &offset);				// <<Vertex buffer from geometry goes here 
+			//Renderer::theContextPtr->IASetInputLayout(pInputLayout);
+			//Renderer::theContextPtr->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			///// Vertex Shader
+			//Renderer::theContextPtr->VSSetShader(VS_Default, nullptr, 0);
+			//UpdateConstantBuffer(m_Groud_Data, m_pCB_World);											//<< world matrix
+			//UpdateConstantBuffer(m_Scene_Data, m_pCB_Scene);											//<< view, projection
+			//deviceContext->VSSetConstantBuffers(0, 1, &m_pCB_World);
+			//deviceContext->VSSetConstantBuffers(1, 1, &m_pCB_Scene);
+			///// Hull Shader 	/// Tesselator	/// Domain Shader	/// Geometry Shader
+			///// Rasterizer
+			//deviceContext->RSSetState(CWcullMode);
+			///// Pixel-Shader
+			//deviceContext->PSSetShader(POINT_PS, nullptr, 0);
+			//deviceContext->PSSetSamplers(0, 1, &CubesTexSamplerState);
+			//deviceContext->PSSetShaderResources(0, 1, &GroundTexture);									// << Texture / shader resouce view	
+			///// Output Merger, DRAW
+			//deviceContext->Draw(GetNumberOf_Indecies(VertBufferGround, sizeof(OBJ_VERT_XM)), 0);			/// Draw without index
+			//  \ ___________________________________________________________________________________________/
 		}
 		inline static void Present(UINT syncInterval = 0, UINT flags = 0)
 		{
@@ -93,25 +156,11 @@ namespace RendererD3D
 
 		inline static UINT GetResolutionWidth() { return resolutionWidth; }
 		inline static UINT GetResolutionHeight() { return resolutionHeight; }
-
-		inline static void Renderer::Shutdown()
-		{
-			//theSwapChainPtr->SetFullscreenState(false, 0);
-			// release the d3d object and device
-			ReleaseCOM(theDepthStencilViewPtr);
-			ReleaseCOM(theDepthStencilBufferPtr);
-			ReleaseCOM(theRenderTargetViewPtr);
-			ReleaseCOM(theBackBufferPtr);
-			//ReleaseCOM(thePerObjectCBuffer);
-			//ReleaseCOM(thePerSkinnedObjectCBuffer);
-			//ReleaseCOM(theDepthStencilSRVPtr);
-			ReleaseCOM(theSwapChainPtr);
-			ReleaseCOM(theContextPtr);
-			ReleaseCOM(theDevicePtr);
-
-			// my releases 
-			//ReleaseCOM(chainBuffer);
-		}
+		
+		
+		static void Shutdown();
+		
+		
 
 		
 
@@ -132,6 +181,7 @@ namespace RendererD3D
 			return this->projection;
 		}
 
+		 // helper
 		 void Renderer::BuildPerObjectConstantBuffers()
 		 {
 			 // per object CBuffer

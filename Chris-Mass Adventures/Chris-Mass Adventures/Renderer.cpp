@@ -2,6 +2,13 @@
 #include "Renderer.h"
 #include "RenderNode.h"
 
+
+//#include "RenderShape.h"
+//#include "RenderContext.h"
+#include "Assets\Cube.h"
+
+
+
 using namespace DirectX;
 
 namespace RendererD3D
@@ -14,6 +21,19 @@ namespace RendererD3D
 	ID3D11RenderTargetView	* Renderer::theRenderTargetViewPtr = 0;
 	ID3D11Texture2D			* Renderer::theDepthStencilBufferPtr = 0;
 	ID3D11DepthStencilView	* Renderer::theDepthStencilViewPtr = 0;
+	ID3D11InputLayout		* Renderer::pInputLayout = nullptr;
+
+	ID3D11VertexShader			* VS_Default = nullptr;
+	ID3D11PixelShader			* PS_Default = nullptr;
+
+
+	// cameras 
+	//CAMERA camera;
+
+	// buffers 
+	//ID3D11Buffer				* Renderer::m_CB_Camera = nullptr ;
+	ID3D11Buffer				* Renderer::IndexBufferCube = nullptr;
+	ID3D11Buffer				* Renderer::VertBufferCube = nullptr;
 
 	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 	{
@@ -121,7 +141,7 @@ namespace RendererD3D
 			1.0f, 0.0f);
 
 		//ClearDepthAndStencilTarget
-		// flush the screen
+		 //flush the screen
 		float color_array[4] = { 0.0f, 0, 0.2f, 1.0f };
 		theContextPtr->ClearRenderTargetView(theRenderTargetViewPtr, color_array);
 
@@ -132,14 +152,147 @@ namespace RendererD3D
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORMAL"  , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-
 		};
 		
 		
+		////////////////////////////////////////////////////////////////////////////////
+		// SHADERS  pixel
+		theDevicePtr->CreatePixelShader(PixelShader, sizeof(PixelShader), NULL, &PS_Default);
+		//          vertex 
+		theDevicePtr->CreateVertexShader(VertexShader, sizeof(VertexShader), NULL, &VS_Default);
+    	theDevicePtr->CreateInputLayout(vertexPosDesc, 3, VS_Default, sizeof(VS_Default), &pInputLayout);
+
+		//// camera 
+		XMVECTOR eyePos = XMVectorSet(0.0f, 4.0f, -2.0f, 1.0f);
+		XMVECTOR focusPos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		XMVECTOR worldUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		
+
+		//camera.view_matrix       = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
+		//camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), resWidth / resHeight, 0.1f, 2000.0f);
+		//
+		//CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
+
+
+		// model code for testing 
+		MakeCube();
+	}
+
+	template <typename Type>
+	// takes the source data, and makes a buffer, Buffer type defines  vertes, index or constant buffer
+	HRESULT Renderer::CreateConstantBuffer(const Type& source, ID3D11Buffer ** buffer, UINT bindFlag_type)
+	{
+		HRESULT hr;
+
+		//buffer description
+		D3D11_BUFFER_DESC desc = { 0 };
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.BindFlags = bindFlag_type;
+		desc.ByteWidth = sizeof(Type);
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.StructureByteStride = 0;
+		desc.MiscFlags = 0;
+		// getting the data in there 
+		D3D11_SUBRESOURCE_DATA resource_data = { 0 };
+		resource_data.pSysMem = &source;
+		resource_data.SysMemPitch = 0;
+		resource_data.SysMemSlicePitch = 0;
+
+		if (RendererD3D::Renderer::theDevicePtr)
+		{
+			hr = RendererD3D::Renderer::theDevicePtr->CreateBuffer(&desc, &resource_data, buffer);
+		}
+		return hr;
 	}
 
 	void Renderer::LoadObjects()
 	{
+
+	}
+
+	void Renderer::MakeCube( )
+	{
+		D3D11_BUFFER_DESC indexBufferData_cube = { 0 };
+		indexBufferData_cube.Usage = D3D11_USAGE_IMMUTABLE;
+		indexBufferData_cube.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		indexBufferData_cube.ByteWidth = sizeof(Cube_indicies);
+		indexBufferData_cube.MiscFlags = 0;
+		indexBufferData_cube.CPUAccessFlags = 0;
+		indexBufferData_cube.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA indexBufferDataSR_cube = { 0 };
+		indexBufferDataSR_cube.pSysMem = Cube_indicies;
+		indexBufferDataSR_cube.SysMemPitch = 0;
+		indexBufferDataSR_cube.SysMemSlicePitch = 0;
+
+		HRESULT hr = Renderer::theDevicePtr->CreateBuffer(&indexBufferData_cube, &indexBufferDataSR_cube, &IndexBufferCube);
+
+
+		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
+		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
+
+		verteciesBufferDesc_cube.Usage = D3D11_USAGE_IMMUTABLE;
+		verteciesBufferDesc_cube.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		verteciesBufferDesc_cube.ByteWidth = sizeof(Cube_data);
+		verteciesBufferDesc_cube.MiscFlags = 0;
+		verteciesBufferDesc_cube.CPUAccessFlags = 0;
+		verteciesBufferDesc_cube.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
+		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
+
+		vertexBufferData_cube.pSysMem = Cube_data;
+		vertexBufferData_cube.SysMemPitch = 0;
+		vertexBufferData_cube.SysMemSlicePitch = 0;
+
+		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertBufferCube);
+
+		
+		//RendererD3D::Renderer::cube
+
+
+		//RenderNode node;
+		
+		//RenderContext context;
+		//context.AddRenderNode(&node);
+		
+		
+		//shape.AddToContextSet(&context);
+
+		//RenderMesh mesh;
+		/// Initializes the indexed mesh based on data passed in.
+		/// Vertices that contain a position and texture coordinate.
+		/// \param verts - The vertices to copy to the vertex buffer.
+		/// \param numVerts - The number of vertices to copy to the vertex buffer.
+		/// \param indices - The indices to copy to the index buffer.
+		/// \param numIndices - The number of indices to copy to the index buffer.
+		/// \param primitiveType - The type of primitive represented by the vertices.
+	//	mesh.CreateIndexedMesh(Cube_data, sizeof(Cube_data) / sizeof(VERTEX), Cube_indicies, sizeof(Cube_indicies) / sizeof(unsigned int), D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	}
+
+	void Renderer::Shutdown()
+	{
+		//theSwapChainPtr->SetFullscreenState(false, 0);
+		// release the d3d object and device
+		ReleaseCOM(theDepthStencilViewPtr);
+		ReleaseCOM(theDepthStencilBufferPtr);
+		ReleaseCOM(theRenderTargetViewPtr);
+		ReleaseCOM(theBackBufferPtr);
+		//ReleaseCOM(thePerObjectCBuffer);
+		//ReleaseCOM(thePerSkinnedObjectCBuffer);
+		//ReleaseCOM(theDepthStencilSRVPtr);
+		ReleaseCOM(theSwapChainPtr);
+		ReleaseCOM(theContextPtr);
+		ReleaseCOM(theDevicePtr);
+
+		//ReleaseCOM(m_CB_Camera);
+		ReleaseCOM(IndexBufferCube);
+		ReleaseCOM(VertBufferCube);
+		ReleaseCOM(pInputLayout);
+
+		ReleaseCOM(VS_Default);
+		ReleaseCOM(PS_Default);
 
 	}
 }

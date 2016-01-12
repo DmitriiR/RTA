@@ -11,18 +11,21 @@ using namespace RendererD3D;
 
 class RenderContext : RenderNode
 {
+
 private:
 	RenderSet *renderSetPtr;
 	ID3D11PixelShader * PixelShaderPtr;
 	std::list<RenderMaterial> materials;
 
 public:
-	RenderContext();
+	RenderContext()
+	{
+	}
 	~RenderContext()
 	{
 		delete renderSetPtr;
 		
-	};
+	}
 
 	// apply render states and shaders
 	////////////////////////////////////////////////////////////////////////////

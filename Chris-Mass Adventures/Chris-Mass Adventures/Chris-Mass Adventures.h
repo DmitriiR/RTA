@@ -4,7 +4,11 @@
 #include "resource.h"
 #include "stdafx.h"
 #include "Renderer.h"
+#pragma comment (lib, "dinput8.lib")
 
+#define WINDOW_WIDTH 512
+#define WINDOW_HEIGHT 256
 
-#define WINDOW_WIDTH 256
-#define WINDOW_HEIGHT 512
+//#include "Camera.h"
+// cameras 
+//static CAMERA camera;
