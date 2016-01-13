@@ -1,6 +1,5 @@
 // Chris-Mass Adventures.cpp : Defines the entry point for the application.
 //
-
 #include "stdafx.h"
 #include "Chris-Mass Adventures.h"
 #include "fbxsdk.h"
@@ -21,6 +20,7 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
+
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPTSTR    lpCmdLine,
                      _In_ int       nCmdShow)
@@ -48,7 +48,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	//FBX Manager initialization
 	FbxManager* manager = FbxManager::Create();
-
+	
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
