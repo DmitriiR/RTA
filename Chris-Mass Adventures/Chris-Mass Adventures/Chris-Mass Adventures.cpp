@@ -22,7 +22,7 @@ LPDIRECTINPUT8 DirectInput;
 
 
 #include "RenderShape.h"
-RenderShape cube; 
+//RenderShape cube; 
 
 CAMERA camera;
 
@@ -70,7 +70,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		// OUR Primary Loop 
-		rendererInstance->Update();
+		rendererInstance->Run();
 		rendererInstance->Present();
 		
 		/////////////////////////////////////////////////////////////////////////////////////////////		 

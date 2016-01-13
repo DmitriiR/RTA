@@ -61,12 +61,15 @@ namespace RendererD3D
 		static cbPerObject thePerObjectData;
 		static ID3D11Buffer *thePerObjectCBuffer;
 
-		
-		
+		//static ID3D11Texture2D			* renderTargetTextureMap ;
+		static ID3D11BlendState			* Transparency;
 		// buffers 
 		//static ID3D11Buffer				* m_CB_Camera ;
 		static ID3D11Buffer				* IndexBufferCube ;
 		static ID3D11Buffer				* VertBufferCube ;
+
+		// objects 
+		//OBJECT cube;
 
 		// temp objects 
 		//RenderShape cube;
@@ -81,11 +84,15 @@ namespace RendererD3D
 		
 		template <typename Type>// takes the source data, and makes a buffer, Buffer type defines  vertes, index or constant buffer
 		static HRESULT CreateConstantBuffer(const Type& source, ID3D11Buffer ** buffer, UINT bindFlag_type);
+		template <typename Type>// takes the source data, and makes a buffer
+		static bool UpdateConstantBuffer(const Type& source, ID3D11Buffer * buffer);
+		static UINT GetNumberOf_Indecies(ID3D11Buffer * buffer, unsigned int DataSize);
+
 		static void LoadObjects();
 		static void MakeCube();
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		static void SetResolution(UINT _width, UINT _height);
-
+		void UpdateCamera();
 		//static void Shutdown();
 
 		Renderer();
@@ -114,38 +121,8 @@ namespace RendererD3D
 			theContextPtr->ClearDepthStencilView(theDepthStencilViewPtr, clearFlags, depth, stencil);
 		}
 
-		inline static void Update()
-		{
-			//**********************************      Cube      ***************************************\
-				/// Pipeline																				 |
-			//XMMATRIX viewmatrix_copy = XMMatrixInverse(nullptr, camera.view_matrix);
-			
-			//cube.worldMatrix = XMMatrixIdentity();
-			///// Input Input-Assembler 
-			//unsigned int stride = sizeof(VERTEX);
-			//unsigned int offset = 0;
-			////ID3D11Buffer* pNullBuffer = nullptr;
-			//Renderer::theContextPtr->IASetIndexBuffer(IndexBufferCube, DXGI_FORMAT_R32_UINT, 0);						// model index buffer
-			//Renderer::theContextPtr->IASetVertexBuffers(0, 1, &VertBufferCube, &stride, &offset);				// <<Vertex buffer from geometry goes here 
-			//Renderer::theContextPtr->IASetInputLayout(pInputLayout);
-			//Renderer::theContextPtr->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			///// Vertex Shader
-			//Renderer::theContextPtr->VSSetShader(VS_Default, nullptr, 0);
-			//UpdateConstantBuffer(m_Groud_Data, m_pCB_World);											//<< world matrix
-			//UpdateConstantBuffer(m_Scene_Data, m_pCB_Scene);											//<< view, projection
-			//deviceContext->VSSetConstantBuffers(0, 1, &m_pCB_World);
-			//deviceContext->VSSetConstantBuffers(1, 1, &m_pCB_Scene);
-			///// Hull Shader 	/// Tesselator	/// Domain Shader	/// Geometry Shader
-			///// Rasterizer
-			//deviceContext->RSSetState(CWcullMode);
-			///// Pixel-Shader
-			//deviceContext->PSSetShader(POINT_PS, nullptr, 0);
-			//deviceContext->PSSetSamplers(0, 1, &CubesTexSamplerState);
-			//deviceContext->PSSetShaderResources(0, 1, &GroundTexture);									// << Texture / shader resouce view	
-			///// Output Merger, DRAW
-			//deviceContext->Draw(GetNumberOf_Indecies(VertBufferGround, sizeof(OBJ_VERT_XM)), 0);			/// Draw without index
-			//  \ ___________________________________________________________________________________________/
-		}
+		static void Run();
+		
 		inline static void Present(UINT syncInterval = 0, UINT flags = 0)
 		{
 			if (theSwapChainPtr)

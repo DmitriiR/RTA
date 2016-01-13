@@ -58,3 +58,9 @@ struct CAMERA
 	DirectX::XMMATRIX view_matrix;
 	DirectX::XMMATRIX projection_matrix;
 };
+
+struct OBJECT
+{
+	DirectX::XMMATRIX worldMatrix;
+
+};
