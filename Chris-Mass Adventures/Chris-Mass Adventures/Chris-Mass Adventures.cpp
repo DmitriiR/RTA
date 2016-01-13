@@ -60,9 +60,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CHRISMASSADVENTURES));
 
-	//FBX Manager initialization
-	FbxManager* manager = FbxManager::Create();
-	
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{

@@ -60,7 +60,7 @@ public:
 		if (localMatrixPtr != 0)
 			worldMatrix = *localMatrixPtr;
 
-		func = IndexedPrimitiveRenderFunc;
+		Renderfunc = IndexedPrimitiveRenderFunc;
 	}
 	
 };
