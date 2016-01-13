@@ -14,11 +14,6 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 // Our oubjects 
 RendererD3D::Renderer * rendererInstance;
 
-/////////// DIRECT INPUT
-IDirectInputDevice8 * DIKeyboard;
-IDirectInputDevice8 * DIMouse;
-DIMOUSESTATE mouseLastState;
-LPDIRECTINPUT8 DirectInput;
 
 
 #include "RenderShape.h"
@@ -69,7 +64,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			DispatchMessage(&msg); 
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		// OUR Primary Loop 
+		// OUR Primary Loop
+		rendererInstance->DetectInput();
 		rendererInstance->Run();
 		rendererInstance->Present();
 		
@@ -130,7 +126,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // end my edit 
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+	   CW_USEDEFAULT, 0, WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
    {
@@ -139,6 +135,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    /////////////////////////////////////////////////////////////////////////////////////////////
    // OUR Initialization code goes here
    rendererInstance->Initialize(hWnd, WINDOW_WIDTH, WINDOW_HEIGHT);
+   rendererInstance->InitializeDirectInput(hInst, hWnd);
    rendererInstance->LoadObjects(); // empty for now
    rendererInstance->MakeCube();
    /////////////////////////////////////////////////////////////////////////////////////////////

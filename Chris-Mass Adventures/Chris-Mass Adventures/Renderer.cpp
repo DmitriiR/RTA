@@ -7,6 +7,40 @@
 //#include "RenderContext.h"
 #include "Assets\Cube.h"
 
+/////////// DIRECT INPUT
+static IDirectInputDevice8 * DIKeyboard;
+static IDirectInputDevice8 * DIMouse;
+
+DIMOUSESTATE mouseLastState;
+LPDIRECTINPUT8 DirectInput;
+#define MOSE_SPEED			0.007f
+float rot = 0.0f;
+float riseY = 0.0f;
+float rotx = 0.0f;
+float rotz = 0.0f;
+float scaleX = 1.0f;
+float scaleY = 1.0f;
+
+XMMATRIX camRotationMatrix;
+XMMATRIX Rotationx;
+XMMATRIX Rotationz;
+XMMATRIX Rotationy;
+
+float moveLeftRight = 0.0f;
+float moveBackForward = 0.0f;
+float camYaw = 0.0f;
+float camPitch = 0.0f;
+float cam_View_Angle = 90.0f;
+float movemet_speed = 0.015f; // camera movement speed
+bool first_person = false;
+
+XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+XMVECTOR DefaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+XMVECTOR camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+XMVECTOR camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+XMVECTOR camPosition = XMVectorSet(0.0f, 0.0f, -4.0f, 0.0f); // initial camera position
+XMVECTOR camTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);;
 
 
 using namespace DirectX;
@@ -33,8 +67,8 @@ namespace RendererD3D
 
 	// cameras 
 	CAMERA camera;
-	float cam_View_Angle = 100.0f;
-
+	//float cam_View_Angle = 100.0f;
+	float Aspect; 
 	// objects 
 	XMMATRIX cubeWorld;
 
@@ -52,6 +86,7 @@ namespace RendererD3D
 
 	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 	{
+		Aspect = resWidth / resHeight;
 		//bool isFullscreen;
 		DXGI_MODE_DESC	bufferDesctoFill;
 		ZeroMemory(&bufferDesctoFill, sizeof(DXGI_MODE_DESC));
@@ -403,49 +438,194 @@ namespace RendererD3D
 
 	}
 
-	void Renderer::UpdateCamera()
+	bool Renderer::InitializeDirectInput(HINSTANCE hInstance, HWND hWnd)
 	{
 
-		//m_Scene_Data.projection_matrix = theApp->PerspectiveProjectionMatrix(cam_View_Angle, 100.0f, 0.1f, Aspect);
+		HRESULT hr = DirectInput8Create(hInstance,
+			DIRECTINPUT_VERSION,
+			IID_IDirectInput8,
+			(void**)&DirectInput,
+			NULL);
+
+		hr = DirectInput->CreateDevice(GUID_SysKeyboard,
+			&DIKeyboard,
+			NULL);
+
+		hr = DirectInput->CreateDevice(GUID_SysMouse,
+			&DIMouse,
+			NULL);
+
+		hr = DIKeyboard->SetDataFormat(&c_dfDIKeyboard);
+		hr = DIKeyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+
+		hr = DIMouse->SetDataFormat(&c_dfDIMouse);
+		// controls and sets the mouse pointer to locked 
+		// ---------------------------------------------
+		//hr = DIMouse->SetCooperativeLevel(window, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
+
+		// controls and sets the mouse pointer to lose 
+		// ---------------------------------------------
+		hr = DIMouse->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_NOWINKEY);
+		//
+		ShowCursor(true);
+		return true;
+
+	}
+
+
+	void Renderer::DetectInput()
+	{
+		if (!DIKeyboard || !DIMouse)
+		{
+			return; 
+		}
+		// holds mouse info 
+		DIMOUSESTATE mouseCurrState = { 0 };
+
+		// breakdown 
+		//LONG lX; 
+		//LONG lY;
+		//LONG lZ;
+		//BYTE rgbButtons[4];
+
+		BYTE keyboardState[256] = { 0 };
+
+		DIKeyboard->Acquire();
+		DIMouse->Acquire();
+
+		DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrState);
+		DIKeyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
+
+		//if (keyboardState[DIK_ESCAPE] & 0x80)
+		//	PostMessage(window, WM_DESTROY, 0, 0);
+
+		//	float speed = 15.0f * time;
+
+		if (keyboardState[DIK_A] & 0x80)
+		{
+			moveLeftRight -= movemet_speed;
+		}
+		if (keyboardState[DIK_D] & 0x80)
+		{
+			moveLeftRight += movemet_speed;
+		}
+		if (keyboardState[DIK_W] & 0x80)
+		{
+			moveBackForward += movemet_speed;
+		}
+		if (keyboardState[DIK_S] & 0x80)
+		{
+			moveBackForward -= movemet_speed;
+		}
+		if (keyboardState[DIK_1] & 0x80)
+		{
+			first_person = !first_person;
+			//enable_Shader = !enable_Shader;
+		}
+
+		if (keyboardState[DIK_SPACE] & 0x80)
+		{
+			riseY -= movemet_speed;
+		}
+
+		if (mouseCurrState.lZ > 0)
+		{
+
+			//cam_View_Angle += 2.0f;
+			moveBackForward += movemet_speed * 100.0f;
+		}
+		else if (mouseCurrState.lZ < 0)
+		{
+			//cam_View_Angle -= 2.0f;
+			moveBackForward -= movemet_speed * 100.0f;
+		}
+		// switching between first and freelook camera
+		if (first_person)
+		{
+
+			if (((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY)))
+			{
+				camYaw += mouseLastState.lX * MOSE_SPEED;
+				camPitch += mouseCurrState.lY * MOSE_SPEED;
+				mouseLastState = mouseCurrState;
+			}
+		}
+		else
+		{
+			if (((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY)) && GetAsyncKeyState(VK_RBUTTON))
+			{
+				camYaw += mouseLastState.lX * MOSE_SPEED;
+				camPitch += mouseCurrState.lY * MOSE_SPEED;
+				mouseLastState = mouseCurrState;
+			}
+
+		}
+		//////////////////////////////////////////////////////////////////////////////////////
+		// Update the CAMERA 
+		UpdateCamera();
+		/////////////////////////////////////////////////////////////////////////////////////
+		return;
+	}
+
+	void Renderer::UpdateCamera()
+	{
+		//XMVECTOR eyePos = XMVectorSet(0.0f, 4.0f, -1.0f, 1.0f);
+		//XMVECTOR focusPos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		//XMVECTOR worldUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		//camera.view_matrix = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
+
+
+		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500.0f);
+
+		//camera.projection_matrix = PerspectiveProjectionMatrix(cam_View_Angle, 100.0f, 0.1f, Aspect);
 		//
 		//// not using the roll parameter, so setting to 0
-		//camRotationMatrix = XMMatrixRotationRollPitchYaw(camPitch, camYaw, 0.0f);
-		//camTarget = XMVector3TransformCoord(DefaultForward, camRotationMatrix);
-		//camTarget = XMVector3Normalize(camTarget);
+		camRotationMatrix = XMMatrixRotationRollPitchYaw(camPitch, camYaw, 0.0f);
+		camTarget = XMVector3TransformCoord(DefaultForward, camRotationMatrix);
+		camTarget = XMVector3Normalize(camTarget);
 		//
 		//// finding the new direction of the camera 
-		//XMMATRIX temp_RotateOnY;
-		//temp_RotateOnY = XMMatrixRotationY(camPitch);
-		//XMMATRIX temp_RotateOnX;
-		//temp_RotateOnX = XMMatrixRotationY(camYaw);
+		XMMATRIX temp_RotateOnY;
+		temp_RotateOnY = XMMatrixRotationY(camPitch);
+		XMMATRIX temp_RotateOnX;
+		temp_RotateOnX = XMMatrixRotationY(camYaw);
 		//
-		//camRight = XMVector3TransformCoord(DefaultRight, temp_RotateOnX);
-		//camForward = XMVector3TransformCoord(camTarget, temp_RotateOnY);
-		//camUp = XMVector3TransformCoord(camUp, temp_RotateOnY);
+		camRight = XMVector3TransformCoord(DefaultRight, temp_RotateOnX);
+		camForward = XMVector3TransformCoord(camTarget, temp_RotateOnY);
+		camUp = XMVector3TransformCoord(camUp, temp_RotateOnY);
 		//
-		//camPosition += moveLeftRight* camRight;
-		//camPosition += moveBackForward *camForward;
+		camPosition += moveLeftRight* camRight;
+		camPosition += moveBackForward *camForward;
 		//
-		//moveLeftRight = 0.0f;
-		//moveBackForward = 0.0f;
+		moveLeftRight = 0.0f;
+		moveBackForward = 0.0f;
 		//
-		//camTarget = camPosition + camTarget;
+		camTarget = camPosition + camTarget;
 		//
-		//m_Scene_Data.view_matrix = XMMatrixLookAtLH(camPosition, camTarget, camUp);
+		camera.view_matrix = XMMatrixLookAtLH(camPosition, camTarget, camUp);
 
 	}
 	
 	XMMATRIX Renderer::PerspectiveProjectionMatrix(float FOV, float zFar, float zNear, float aspect)
 	{
 		XMMATRIX ProjectionMatrix;
+		XMFLOAT4X4 pr;
+		
+		//Yscale = cotangent(½ Vertical FOV)
+		float YScale = (sin(DegToRad(FOV * 0.5f)) / cos(DegToRad(FOV * 0.5f)));
+		float XScale = YScale * (aspect);
 
-		////Yscale = cotangent(½ Vertical FOV)
-		//float YScale = (sin(DegToRad(FOV * 0.5f)) / cos(DegToRad(FOV * 0.5f)));
-		//float XScale = YScale * (aspect);
+		pr.m[0][0] = XScale;	pr.m[0][1] = 0.0f;		pr.m[0][2] = 0.0f;								pr.m[0][3] = 0.0f;
+		pr.m[1][0] = 0.0f;		pr.m[1][1] = YScale;	pr.m[1][2] = 0.0f;								pr.m[1][3] = 0.0f;
+		pr.m[2][0] = 0.0f;		pr.m[2][1] = 0.0f;		pr.m[2][2] = zFar / (zFar - zNear);				pr.m[2][3] = 0.0f;
+		pr.m[3][0] = 0.0f;		pr.m[3][1] = 0.0f;		pr.m[3][2] = -(zFar * zNear) / (zFar - zNear);	pr.m[3][3] = 0.0f;
+
 		//ProjectionMatrix.r[0] = { XScale, 0.0f, 0.0f, 0.0f };
 		//ProjectionMatrix.r[1] = { 0.0f, YScale, 0.0f, 0.0f };
 		//ProjectionMatrix.r[2] = { 0.0f, 0.0f, zFar / (zFar - zNear), 1.0f };
 		//ProjectionMatrix.r[3] = { 0.0f, 0.0f, -(zFar * zNear) / (zFar - zNear), 0.0f };
+
+		ProjectionMatrix = XMLoadFloat4x4(&pr);
 
 		return ProjectionMatrix;
 	}
@@ -487,5 +667,15 @@ namespace RendererD3D
 		//ReleaseCOM(renderTargetTextureMap);
 		//ReleaseCOM(renderTargetViewMap);
 		ReleaseCOM(Transparency);
+
+		//direct input
+		if (DIKeyboard)		DIKeyboard->Unacquire();
+		if (DIMouse)		DIMouse->Unacquire();
+		if (DirectInput)	DirectInput->Release();
+
+		ReleaseCOM(DIKeyboard);
+		ReleaseCOM(DIMouse);
+		//ReleaseCOM(DirectInput);
+
 	}
 }
