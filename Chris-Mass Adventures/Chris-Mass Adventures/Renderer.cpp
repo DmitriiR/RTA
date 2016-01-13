@@ -434,6 +434,25 @@ namespace RendererD3D
 		//m_Scene_Data.view_matrix = XMMatrixLookAtLH(camPosition, camTarget, camUp);
 
 	}
+	
+	XMMATRIX Renderer::PerspectiveProjectionMatrix(float FOV, float zFar, float zNear, float aspect)
+	{
+		XMMATRIX ProjectionMatrix;
+
+		////Yscale = cotangent(½ Vertical FOV)
+		//float YScale = (sin(DegToRad(FOV * 0.5f)) / cos(DegToRad(FOV * 0.5f)));
+		//float XScale = YScale * (aspect);
+		//ProjectionMatrix.r[0] = { XScale, 0.0f, 0.0f, 0.0f };
+		//ProjectionMatrix.r[1] = { 0.0f, YScale, 0.0f, 0.0f };
+		//ProjectionMatrix.r[2] = { 0.0f, 0.0f, zFar / (zFar - zNear), 1.0f };
+		//ProjectionMatrix.r[3] = { 0.0f, 0.0f, -(zFar * zNear) / (zFar - zNear), 0.0f };
+
+		return ProjectionMatrix;
+	}
+	float Renderer::DegToRad(float deg)
+	{
+		return (deg * (3.14f / 180.0f));
+	}
 
 	void Renderer::Shutdown()
 	{

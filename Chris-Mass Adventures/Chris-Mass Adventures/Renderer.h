@@ -93,6 +93,8 @@ namespace RendererD3D
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		static void SetResolution(UINT _width, UINT _height);
 		void UpdateCamera();
+		XMMATRIX PerspectiveProjectionMatrix(float FOV, float zFar, float zNear, float aspect);
+		float DegToRad(float deg);
 		//static void Shutdown();
 
 		Renderer();
