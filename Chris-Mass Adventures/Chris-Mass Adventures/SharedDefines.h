@@ -1,6 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include <d3d11.h>
 typedef unsigned int		uint;
 typedef DirectX::XMFLOAT2	float2;
 typedef DirectX::XMFLOAT3	float3;
@@ -50,3 +51,10 @@ float3 gCameraDir;
 const static int REGISTER_SLOT = 1;
 #endif
 CONSTANT_BUFFER_END
+
+
+struct CAMERA
+{
+	float4x4 view_matrix;
+	float4x4 projection_matrix;
+};

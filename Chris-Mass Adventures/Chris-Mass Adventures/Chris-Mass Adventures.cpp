@@ -2,7 +2,7 @@
 //
 #include "stdafx.h"
 #include "Chris-Mass Adventures.h"
-#include "fbxsdk.h"
+#include "Assets\Cube.h"
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -11,7 +11,21 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 // Our oubjects 
-RendererD3D::Renderer * rendererInstance; 
+RendererD3D::Renderer * rendererInstance;
+
+/////////// DIRECT INPUT
+IDirectInputDevice8 * DIKeyboard;
+IDirectInputDevice8 * DIMouse;
+DIMOUSESTATE mouseLastState;
+LPDIRECTINPUT8 DirectInput;
+
+
+#include "RenderShape.h"
+RenderShape cube; 
+
+CAMERA camera;
+
+
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -55,11 +69,17 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			DispatchMessage(&msg); 
 		}
-		// primary update loop goes here 
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		// OUR Primary Loop 
+		rendererInstance->Update();
 		rendererInstance->Present();
+		
+		/////////////////////////////////////////////////////////////////////////////////////////////		 
 	}
+	
+
 	return (int) msg.wParam;
 }
 
@@ -119,8 +139,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   /////////////////////////////////////////////////////////////////////////////////////////////
    // OUR Initialization code goes here
    rendererInstance->Initialize(hWnd, WINDOW_WIDTH, WINDOW_HEIGHT);
+   rendererInstance->LoadObjects(); // empty for now
+   rendererInstance->MakeCube();
+   /////////////////////////////////////////////////////////////////////////////////////////////
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -170,6 +194,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
+
+		rendererInstance->Shutdown(); // OUR RENDERER Shutdown
+
+		
 		PostQuitMessage(0);
 		break;
 	default:
