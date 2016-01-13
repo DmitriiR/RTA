@@ -4,6 +4,7 @@
 
 #include <DirectXMath.h>
 //#include <vector>
+#include "Assets\Cube.h"
 
 class FBXStuff
 {
@@ -20,9 +21,9 @@ public:
 		DirectX::XMFLOAT3 uvm;
 		DirectX::XMFLOAT3 nrm;
 	};
-private:
+public:
 	HRESULT LoadFBX(std::vector<MyVertex>* outVertexVector);
 	HRESULT UVsToo(std::vector<MyVertex>* outVertexVector);
-	HRESULT NormalsAndUVsToo(std::vector<MyVertex>& outVertexVector);
+	HRESULT NormalsAndUVsToo(std::vector<VERTEX>* outVertexVector, const char * _Filename);
 	
 };

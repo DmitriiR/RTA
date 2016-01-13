@@ -6,6 +6,7 @@
 //#include "RenderShape.h"
 //#include "RenderContext.h"
 #include "Assets\Cube.h"
+#include "FBXStuff.h"
 
 /////////// DIRECT INPUT
 static IDirectInputDevice8 * DIKeyboard;
@@ -31,7 +32,7 @@ float moveBackForward = 0.0f;
 float camYaw = 0.0f;
 float camPitch = 0.0f;
 float cam_View_Angle = 90.0f;
-float movemet_speed = 0.015f; // camera movement speed
+float movemet_speed = 5.015f; // camera movement speed
 bool first_person = false;
 
 XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -64,6 +65,8 @@ namespace RendererD3D
     ID3D11VertexShader		* VS_Default							= nullptr;
 	ID3D11PixelShader		* PS_Default							= nullptr;
 
+	// this is used for FBX stuff!!!!
+	FBXStuff fbxstuff;
 
 	// cameras 
 	CAMERA camera;
@@ -71,18 +74,23 @@ namespace RendererD3D
 	float Aspect; 
 	// objects 
 	XMMATRIX cubeWorld;
+	XMMATRIX model_world;
+
 
 	// buffers 
 	//ID3D11Buffer				* Renderer::m_CB_Camera = nullptr ;
 	ID3D11Buffer				* Renderer::IndexBufferCube = nullptr;
 	ID3D11Buffer				* Renderer::VertBufferCube = nullptr;
-	
+	ID3D11Buffer				* Renderer::VertexBufferModel = nullptr;
 	// dds textures
 	ID3D11ShaderResourceView	* CubesTexture = nullptr;
 
 	ID3D11Buffer				* m_CB_Camera = nullptr;
 	ID3D11Buffer				* m_CB_Cube = nullptr;
+	ID3D11Buffer				* m_CB_Model = nullptr;
 	//ID3D11Buffer				* m_CB_Scene = nullptr;
+
+	std::vector<VERTEX> Renderer::vertexvector;
 
 	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 	{
@@ -268,11 +276,38 @@ namespace RendererD3D
 		
 		CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
+		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
 
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"metallock.dds", NULL, &CubesTexture);
 
-		// model code for testing 
-		//MakeCube();
+		// model code for testing
+		//std::vector<VERTEX> vertexvector;
+
+	//MakeCube();
+		// getting the fbx cube!
+		hr = fbxstuff.NormalsAndUVsToo(&vertexvector, "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
+
+		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
+		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
+
+		verteciesBufferDesc_cube.Usage = D3D11_USAGE_IMMUTABLE;
+		verteciesBufferDesc_cube.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		int size = sizeof(VERTEX) * vertexvector.size();
+		verteciesBufferDesc_cube.ByteWidth = sizeof(VERTEX) * vertexvector.size();
+		verteciesBufferDesc_cube.MiscFlags = 0;
+		verteciesBufferDesc_cube.CPUAccessFlags = 0;
+		verteciesBufferDesc_cube.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
+		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
+
+		//this->vertexvector;
+		vertexBufferData_cube.pSysMem = &vertexvector[0];
+		vertexBufferData_cube.SysMemPitch = 0;
+		vertexBufferData_cube.SysMemSlicePitch = 0;
+
+		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertexBufferModel);
+
 	}
 
 	void Renderer::Run()
@@ -288,7 +323,7 @@ namespace RendererD3D
 		//float blendFactor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
 		//Renderer::theContextPtr->OMSetBlendState(0, 0, 0xffffffff);						// sets up the default blend state for opaque objects 
 		//Renderer::theContextPtr->OMSetBlendState(Transparency, blendFactor, 0xffffffff);	//Set the blend state for transparent objects
-		
+/*
 		//**********************************      Cube      ***************************************\
 		   /// Pipeline																				   |
 			XMMATRIX viewmatrix_copy = XMMatrixInverse(nullptr, camera.view_matrix);
@@ -315,10 +350,38 @@ namespace RendererD3D
 			Renderer::theContextPtr->PSSetSamplers(0, 1, &CubesTexSamplerState);
 			Renderer::theContextPtr->PSSetShaderResources(0, 1, &CubesTexture);									// << Texture / shader resouce view	
 			///// Output Merger, DRAW
-			Renderer::theContextPtr->DrawIndexed(GetNumberOf_Indecies(IndexBufferCube, sizeof(UINT)), 0, 0);			    /// Draw without index
+			//Renderer::theContextPtr->DrawIndexed(GetNumberOf_Indecies(IndexBufferCube, sizeof(UINT)), 0, 0);			    /// Draw without index
 		//  \ ___________________________________________________________________________________________/
-		
-	
+*/		
+			//**********************************      Model      ***************************************\
+		   /// Pipeline																				   |
+			XMMATRIX model_view = XMMatrixInverse(nullptr, camera.view_matrix);
+			model_world = XMMatrixIdentity();
+			///// Input Input-Assembler 
+			unsigned int stride = sizeof(VERTEX);
+			unsigned int offset = 0;
+			////ID3D11Buffer* pNullBuffer = nullptr;
+			//Renderer::theContextPtr->IASetIndexBuffer(IndexBufferCube, DXGI_FORMAT_R32_UINT, 0);				// model index buffer
+			Renderer::theContextPtr->IASetVertexBuffers(0, 1, &VertexBufferModel, &stride, &offset);				// <<Vertex buffer from geometry goes here 
+			Renderer::theContextPtr->IASetInputLayout(pInputLayout);
+			Renderer::theContextPtr->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			///// Vertex Shader
+			Renderer::theContextPtr->VSSetShader(VS_Default, nullptr, 0);
+			Renderer::UpdateConstantBuffer(model_world, m_CB_Model);												//<< world matrix
+			Renderer::UpdateConstantBuffer(camera, m_CB_Camera);											    //<< view, projection
+			Renderer::theContextPtr->VSSetConstantBuffers(0, 1, &m_CB_Model);
+			Renderer::theContextPtr->VSSetConstantBuffers(1, 1, &m_CB_Camera);
+			///// Hull Shader 	/// Tesselator	/// Domain Shader	/// Geometry Shader
+			///// Rasterizer
+			Renderer::theContextPtr->RSSetState(CWcullMode);
+			///// Pixel-Shader
+			Renderer::theContextPtr->PSSetShader(PS_Default, nullptr, 0);
+			Renderer::theContextPtr->PSSetSamplers(0, 1, &CubesTexSamplerState);
+			Renderer::theContextPtr->PSSetShaderResources(0, 1, &CubesTexture);									// << Texture / shader resouce view	
+			///// Output Merger, DRAW
+			Renderer::theContextPtr->Draw(84,0);			    /// Draw without index
+		//  \ ___________________________________________________________________________________________/
+
 	}
 
 	template <typename Type>
@@ -575,7 +638,7 @@ namespace RendererD3D
 		//camera.view_matrix = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
 
 
-		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500.0f);
+		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500000000.0f);
 
 		//camera.projection_matrix = PerspectiveProjectionMatrix(cam_View_Angle, 100.0f, 0.1f, Aspect);
 		//
@@ -667,6 +730,10 @@ namespace RendererD3D
 		//ReleaseCOM(renderTargetTextureMap);
 		//ReleaseCOM(renderTargetViewMap);
 		ReleaseCOM(Transparency);
+
+		// involves model
+		ReleaseCOM(VertexBufferModel);
+		ReleaseCOM(m_CB_Model);
 
 		//direct input
 		if (DIKeyboard)		DIKeyboard->Unacquire();

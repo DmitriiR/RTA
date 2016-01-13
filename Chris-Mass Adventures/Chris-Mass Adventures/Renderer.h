@@ -15,7 +15,7 @@
 #include "VertexShader.csh"
 // testing stuff, not going into the final engine as an include for this file
 #include "RenderMesh.h"
-
+#include "Assets\Cube.h"
 
 //#include "RenderShape.h"
 //#include "RenderContext.h"
@@ -67,6 +67,10 @@ namespace RendererD3D
 		//static ID3D11Buffer				* m_CB_Camera ;
 		static ID3D11Buffer				* IndexBufferCube ;
 		static ID3D11Buffer				* VertBufferCube ;
+		static ID3D11Buffer				* VertexBufferModel;
+
+		static std::vector<VERTEX> vertexvector;
+		
 
 		// objects 
 		//OBJECT cube;
