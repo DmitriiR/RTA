@@ -46,6 +46,7 @@ namespace RendererD3D
 		
 
 	public:
+		static HWND hWnd_global;
 
 		static ID3D11Device				* theDevicePtr;
 		static ID3D11DeviceContext		* theContextPtr;

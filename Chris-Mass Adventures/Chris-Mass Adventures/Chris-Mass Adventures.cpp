@@ -191,7 +191,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		rendererInstance->Shutdown(); // OUR RENDERER Shutdown
 
-		
 		PostQuitMessage(0);
 		break;
 	default:
