@@ -18,7 +18,7 @@ public:
 	struct MyVertex
 	{
 		DirectX::XMFLOAT3 pos;
-		DirectX::XMFLOAT3 uvm;
+		DirectX::XMFLOAT2 uvm;
 		DirectX::XMFLOAT3 nrm;
 	};
 public:

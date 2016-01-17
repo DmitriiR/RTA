@@ -212,6 +212,9 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>* outVertexVector, const c
 			// get the vertices
 			int vertexindex;
 			int polycount = fbxMesh->GetPolygonCount();
+
+			int polygoncounter = 0;
+
 			for (int j = 0; j < polycount; j++)
 			{
 				int numverts = fbxMesh->GetPolygonSize(j);
@@ -221,47 +224,41 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>* outVertexVector, const c
 					vertexindex = fbxMesh->GetPolygonVertex(j, k);
 
 					vertex.pos[0] = (float)vertices[vertexindex].mData[0];
+					vertex.pos[0] = -vertex.pos[0];
 					vertex.pos[1] = (float)vertices[vertexindex].mData[1];
+					vertex.pos[1] = -vertex.pos[1];
 					vertex.pos[2] = (float)vertices[vertexindex].mData[2];
 
-					/*
-
-
 					// getting the UV's from the mesh!
-
+					
 					FbxStringList fbxStrings;
 					fbxMesh->GetUVSetNames(fbxStrings);
-
-					char* uvsetname = fbxStrings.GetStringAt(k);
+					
+					char* uvsetname = fbxStrings.GetStringAt(i);
 					FbxGeometryElementUV* fbxUVElement = fbxMesh->GetElementUV(uvsetname);
 					if (!fbxUVElement)
 						continue;
+					
+					bool okuvindex = fbxUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
+					
+					const int indexcount = (okuvindex) ? fbxUVElement->GetIndexArray().GetCount() : 0;
+					if (polygoncounter < indexcount)
+					{
+						FbxVector2 UVs;
+						int uvindex;
+						if (okuvindex)
+							uvindex = fbxUVElement->GetIndexArray().GetAt(polygoncounter);
+						else
+							uvindex = polygoncounter;
+						UVs = fbxUVElement->GetDirectArray().GetAt(uvindex);
+						vertex.uvw[0] = (float)UVs.mData[0];
+						vertex.uvw[1] = (float)UVs.mData[1];
+						vertex.uvw[1] = 1 - vertex.uvw[1];
+						vertex.uvw[2] = 0;
+					
+						polygoncounter ++;
+					}
 
-					//if (fbxUVElement->GetMappingMode() != FbxGeometryElementUV::eByControlPoint)
-					//	continue;
-
-					//index array, where holds the index referenced to the uv data
-					bool okuvindex = fbxUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;;
-
-					int vertexindex = fbxMesh->GetPolygonVertex(j, k);
-
-					//gets the uv index and fills the fbxvctor 2 of the array of uvs at an index
-					/////
-					FbxVector4 UVs;
-					int uvindex;
-					if (okuvindex)
-						uvindex = fbxUVElement->GetIndexArray().GetAt(vertexindex);
-					else
-						uvindex = vertexindex;
-					UVs = fbxUVElement->GetDirectArray().GetAt(uvindex);
-					/////
-
-					vertex.uvw[0] = (float)UVs.mData[0];
-					vertex.uvw[1] = (float)UVs.mData[1];
-					vertex.uvw[2] = (float)UVs.mData[2];
-
-
-					*/
 					// NORMALS!
 
 					FbxGeometryElementNormal* normalelement = fbxMesh->GetElementNormal();
