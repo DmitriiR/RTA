@@ -1,0 +1,107 @@
+newmtl m_003
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_003.dds
+
+newmtl m_004
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_004.dds
+
+newmtl m_007
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_007.dds
+
+newmtl m_010
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_010.dds
+
+newmtl m_011
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_011.dds
+
+newmtl m_013
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_013.dds
+
+newmtl m_014
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_014.dds
+
+newmtl m_016
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_016.dds
+
+newmtl m_018
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_018.dds
+
+newmtl m_020
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_020.dds
+
+newmtl m_021
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_021.dds
+
+newmtl m_022
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_022.dds
+
+newmtl m_024
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_024.dds
+
+newmtl m_026
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_026.dds
+
+newmtl m_028
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_028.dds
+
+newmtl m_030
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_030.dds
+
+newmtl m_032
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+map_kd textures/R_ALL_02b_360_032.dds
+
+newmtl m_default
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 0.5 0.5 0.5
+

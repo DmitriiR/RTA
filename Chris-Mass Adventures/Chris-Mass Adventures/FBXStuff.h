@@ -15,6 +15,7 @@ public:
 	FbxImporter* fbxImporter = nullptr;
 	FbxMesh* fbxMesh = nullptr;
 
+
 	struct MyVertex
 	{
 		DirectX::XMFLOAT3 pos;
@@ -22,8 +23,11 @@ public:
 		DirectX::XMFLOAT3 nrm;
 	};
 public:
+	//std::vector<MyVertex>* UVvector;
+
 	HRESULT LoadFBX(std::vector<MyVertex>* outVertexVector);
 	HRESULT UVsToo(std::vector<MyVertex>* outVertexVector);
-	HRESULT NormalsAndUVsToo(std::vector<VERTEX>* outVertexVector, const char * _Filename);
+	void LoadUVInformation(FbxMesh* pMesh, std::vector<VERTEX>* outVertexVector);
+	HRESULT NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const char * _Filename);
 	
 };
