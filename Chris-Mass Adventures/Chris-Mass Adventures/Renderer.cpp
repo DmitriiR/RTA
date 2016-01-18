@@ -8,6 +8,8 @@
 #include "Assets\Cube.h"
 #include "FBXStuff.h"
 
+
+
 /////////// DIRECT INPUT
 static IDirectInputDevice8 * DIKeyboard;
 static IDirectInputDevice8 * DIMouse;
@@ -278,14 +280,14 @@ namespace RendererD3D
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
 
-		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"metallock.dds", NULL, &CubesTexture);
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
 
 		// model code for testing
 		//std::vector<VERTEX> vertexvector;
 
 	//MakeCube();
 		// getting the fbx cube!
-		hr = fbxstuff.NormalsAndUVsToo(&vertexvector, "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
+		hr = fbxstuff.NormalsAndUVsToo(&vertexvector, "Assets\\Girl\\Girl.fbx"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
 
 		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
 		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
@@ -379,7 +381,10 @@ namespace RendererD3D
 			Renderer::theContextPtr->PSSetSamplers(0, 1, &CubesTexSamplerState);
 			Renderer::theContextPtr->PSSetShaderResources(0, 1, &CubesTexture);									// << Texture / shader resouce view	
 			///// Output Merger, DRAW
-			Renderer::theContextPtr->Draw(84,0);			    /// Draw without index
+			D3D11_BUFFER_DESC desc = { 0 };
+			VertexBufferModel->GetDesc(&desc);
+			UINT uiNumElements = desc.ByteWidth / sizeof(VERTEX);
+			Renderer::theContextPtr->Draw(uiNumElements, 0);													/// Draw without index
 		//  \ ___________________________________________________________________________________________/
 
 	}
