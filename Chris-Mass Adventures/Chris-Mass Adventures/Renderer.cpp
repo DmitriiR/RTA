@@ -6,7 +6,6 @@
 //#include "RenderShape.h"
 //#include "RenderContext.h"
 #include "Assets\Cube.h"
-
 #include "FBXStuff.h"
 
 /////////// DIRECT INPUT
@@ -33,7 +32,7 @@ float moveBackForward = 0.0f;
 float camYaw = 0.0f;
 float camPitch = 0.0f;
 float cam_View_Angle = 90.0f;
-float movemet_speed = 0.05f; // camera movement speed
+float movemet_speed = 5.015f; // camera movement speed
 bool first_person = false;
 
 XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -49,8 +48,6 @@ using namespace DirectX;
 
 namespace RendererD3D
 {
-	HWND Renderer::hWnd_global; // handle to the window 
-
 	ID3D11Device			* Renderer::theDevicePtr				= 0;
 	ID3D11DeviceContext		* Renderer::theContextPtr				= 0;
 	IDXGISwapChain			* Renderer::theSwapChainPtr				= 0;
@@ -288,7 +285,7 @@ namespace RendererD3D
 
 	//MakeCube();
 		// getting the fbx cube!
-		hr = fbxstuff.NormalsAndUVsToo(&vertexvector, "Assets\\Girl\\girl.fbx"); // changed from literal path
+		hr = fbxstuff.NormalsAndUVsToo(&vertexvector, "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
 
 		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
 		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
@@ -310,7 +307,7 @@ namespace RendererD3D
 		vertexBufferData_cube.SysMemSlicePitch = 0;
 
 		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertexBufferModel);
-
+		
 	}
 
 	void Renderer::Run()
@@ -506,7 +503,6 @@ namespace RendererD3D
 
 	bool Renderer::InitializeDirectInput(HINSTANCE hInstance, HWND hWnd)
 	{
-		hWnd_global = hWnd;
 
 		HRESULT hr = DirectInput8Create(hInstance,
 			DIRECTINPUT_VERSION,
@@ -563,8 +559,8 @@ namespace RendererD3D
 		DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrState);
 		DIKeyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 
-		if (keyboardState[DIK_ESCAPE] & 0x80)
-			PostMessage(hWnd_global, WM_DESTROY, 0, 0);
+		//if (keyboardState[DIK_ESCAPE] & 0x80)
+		//	PostMessage(window, WM_DESTROY, 0, 0);
 
 		//	float speed = 15.0f * time;
 
@@ -742,7 +738,7 @@ namespace RendererD3D
 		//direct input
 		if (DIKeyboard)		DIKeyboard->Unacquire();
 		if (DIMouse)		DIMouse->Unacquire();
-		//if (DirectInput)	DirectInput->Release();
+		if (DirectInput)	DirectInput->Release();
 
 		ReleaseCOM(DIKeyboard);
 		ReleaseCOM(DIMouse);
