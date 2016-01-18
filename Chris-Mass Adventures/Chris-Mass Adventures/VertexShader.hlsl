@@ -3,8 +3,8 @@ struct V_IN
 {
 
 	float3 pos : POS;
-	float3 nrm : NRM; 
 	float3 uvm : UVM;
+	float3 nrm : NRM; 
 	//float3 tan : TAN;
 	//float3 bin : BIN;
 };
@@ -14,7 +14,7 @@ struct VS_OUTPUT
 	//float4 posH : SV_POSITION;// homoinzed rasterized, on the inbound the value is the same as the vLayour, on the output the pixel shader needs to match the PS parameter 
 
 	float4		wPos			: POS;
-	float3      TexCoord		: UVM;
+	float2      TexCoord		: UVM;
 	float3      normal			: NRM;
 	float4		pos				: SV_POSITION;
 	
@@ -40,17 +40,17 @@ cbuffer SCENE : register(b1)
 
 VS_OUTPUT main(V_IN input) 
 {
-	VS_OUTPUT output;
+	VS_OUTPUT output = (VS_OUTPUT)0;
 
 	float4 localH = float4(input.pos.xyz, 1);
 	localH = mul(localH, worldMatrix);
 	localH = mul(localH, view_matrix);
 	localH = mul(localH, projection_matrix);
 
-	output.normal = mul(normalize(input.nrm), worldMatrix);
-	output.pos = float4(localH);
+	output.normal = input.nrm;
+	output.pos = localH;
 	output.wPos = mul(float4(input.pos.xyz, 1.0f), worldMatrix);
-	output.TexCoord = float3(input.uvm.xy, 0.0f);
+	output.TexCoord = input.uvm.xy;
 
 	return output;
 }

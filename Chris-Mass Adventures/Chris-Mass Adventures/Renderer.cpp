@@ -32,7 +32,7 @@ float moveBackForward = 0.0f;
 float camYaw = 0.0f;
 float camPitch = 0.0f;
 float cam_View_Angle = 90.0f;
-float movemet_speed = 5.015f; // camera movement speed
+float movemet_speed = 0.015f; // camera movement speed
 bool first_person = false;
 
 XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -262,8 +262,8 @@ namespace RendererD3D
 		D3D11_INPUT_ELEMENT_DESC vertexPosDesc[] =
 		{
 			{ "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NRM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "UVM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+			{ "UVM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NRM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
 		theDevicePtr->CreateInputLayout(vertexPosDesc, 3, VertexShader, sizeof(VertexShader), &pInputLayout);
 
@@ -278,7 +278,7 @@ namespace RendererD3D
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
 
-		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"metallock.dds", NULL, &CubesTexture);
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbm\\TestCube.dds", NULL, &CubesTexture);
 
 		// model code for testing
 		//std::vector<VERTEX> vertexvector;

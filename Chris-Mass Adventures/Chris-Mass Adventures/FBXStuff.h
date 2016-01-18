@@ -22,8 +22,7 @@ public:
 		DirectX::XMFLOAT3 nrm;
 	};
 public:
-	HRESULT LoadFBX(std::vector<MyVertex>* outVertexVector);
-	HRESULT UVsToo(std::vector<MyVertex>* outVertexVector);
 	HRESULT NormalsAndUVsToo(std::vector<VERTEX>* outVertexVector, const char * _Filename);
+	HRESULT BinaryOut(std::vector<VERTEX>inVertexVector, const char* _Filename);
 	
 };
