@@ -304,7 +304,7 @@ namespace RendererD3D
 		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Deposit_Box\\Deposit_Box.FBX");
 		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx.FBX");
 		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman.FBX");
-		hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Teddy\\Teddy_Attack1.fbx");
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
 
 		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
