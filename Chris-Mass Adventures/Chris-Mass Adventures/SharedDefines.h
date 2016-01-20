@@ -1,7 +1,7 @@
 #pragma once
-
-#include <DirectXMath.h>
+#include "stdafx.h"
 #include <d3d11.h>
+#include <DirectXMath.h>
 typedef unsigned int		uint;
 typedef DirectX::XMFLOAT2	float2;
 typedef DirectX::XMFLOAT3	float3;
@@ -50,6 +50,13 @@ float3 gCameraDir;
 #ifdef __cplusplus
 const static int REGISTER_SLOT = 1;
 #endif
+CONSTANT_BUFFER_END
+
+
+CONSTANT_BUFFER_BEGIN(dirlight, b2)
+
+float4x4 dir_light_pos;
+
 CONSTANT_BUFFER_END
 
 

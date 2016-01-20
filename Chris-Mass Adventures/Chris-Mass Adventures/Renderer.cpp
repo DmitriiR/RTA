@@ -44,7 +44,8 @@ XMVECTOR camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 XMVECTOR camPosition = XMVectorSet(0.0f, 0.0f, -4.0f, 0.0f); // initial camera position
 XMVECTOR camTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);;
-
+// the directional light's vector
+XMVECTOR Dir_Light_pos = XMVectorSet(0.0f, -0.25f, 1.0f, 0.0f);
 
 using namespace DirectX;
 
@@ -91,7 +92,10 @@ namespace RendererD3D
 	ID3D11Buffer				* m_CB_Cube = nullptr;
 	ID3D11Buffer				* m_CB_Model = nullptr;
 	//ID3D11Buffer				* m_CB_Scene = nullptr;
+	// CB buffer for direct light
+	ID3D11Buffer				* m_pCB_DirectLight = nullptr;
 
+	// the array of vertexes for our mesh
 	std::vector<VERTEX> Renderer::vertexvector;
 
 	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
@@ -269,6 +273,10 @@ namespace RendererD3D
 		};
 		theDevicePtr->CreateInputLayout(vertexPosDesc, 3, VertexShader, sizeof(VertexShader), &pInputLayout);
 
+
+
+	
+
 		//// camera 
 		XMVECTOR eyePos = XMVectorSet(0.0f, 4.0f, -1.0f, 1.0f);
 		XMVECTOR focusPos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -280,6 +288,8 @@ namespace RendererD3D
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
 		
+		// creates the constant buffer for the directional light
+		CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
@@ -384,6 +394,11 @@ namespace RendererD3D
 			Renderer::UpdateConstantBuffer(camera, m_CB_Camera);											    //<< view, projection
 			Renderer::theContextPtr->VSSetConstantBuffers(0, 1, &m_CB_Model);
 			Renderer::theContextPtr->VSSetConstantBuffers(1, 1, &m_CB_Camera);
+
+			// directional light
+			XMVECTOR directionalLight = XMVectorSet(XMVectorGetX(Dir_Light_pos), XMVectorGetY(Dir_Light_pos), XMVectorGetZ(Dir_Light_pos),0.0f);
+			UpdateConstantBuffer(directionalLight, m_pCB_DirectLight);
+			Renderer::theContextPtr->VSSetConstantBuffers(3, 1, &m_pCB_DirectLight);
 			///// Hull Shader 	/// Tesselator	/// Domain Shader	/// Geometry Shader
 			///// Rasterizer
 			Renderer::theContextPtr->RSSetState(CWcullMode);
@@ -751,6 +766,8 @@ namespace RendererD3D
 		ReleaseCOM(VertexBufferModel);
 		ReleaseCOM(m_CB_Model);
 
+		// release any lights
+		ReleaseCOM(m_pCB_DirectLight);
 		//direct input
 		if (DIKeyboard)		DIKeyboard->Unacquire();
 		if (DIMouse)		DIMouse->Unacquire();
