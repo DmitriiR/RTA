@@ -94,6 +94,7 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="FBXStuff.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="JunkCode.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderMaterial.h" />

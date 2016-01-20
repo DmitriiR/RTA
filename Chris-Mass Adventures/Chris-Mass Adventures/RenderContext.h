@@ -3,7 +3,7 @@
 #include "RenderMaterial.h"
 #include "RenderSet.h"
 #include "Renderer.h"
-#include "IndexBuffer.h"
+//#include "IndexBuffer.h"
 
 #include <list>
 
@@ -58,7 +58,7 @@ public:
 
 		RenderContext & contPtr = (RenderContext &)node;
 		
-		RendererD3D::Renderer::theContextPtr->IASetIndexBuffer(IndexBuffer::GetReference().GetIndices(), DXGI_FORMAT_R32_UINT, 0);
+		//RendererD3D::Renderer::theContextPtr->IASetIndexBuffer(IndexBuffer::GetReference().GetIndices(), DXGI_FORMAT_R32_UINT, 0);
 	    
 		//RendererD3D::Renderer::theContextPtr->VSSetShader(contPtr.GetRenderStageTechnique()->GetPass(0)->GetVertexShader(), NULL, NULL);
 		//RendererD3D::Renderer::theContextPtr->PSSetShader(contPtr.GetRenderStageTechnique()->GetPass(0)->GetPixelShader(), NULL, NULL);
@@ -74,7 +74,7 @@ public:
 
 		RenderContext & contPtr = (RenderContext &)node;
 
-		RendererD3D::Renderer::theContextPtr->IASetIndexBuffer(IndexBuffer::GetReference().GetIndices(), DXGI_FORMAT_R32_UINT, 0);
+		//RendererD3D::Renderer::theContextPtr->IASetIndexBuffer(IndexBuffer::GetReference().GetIndices(), DXGI_FORMAT_R32_UINT, 0);
 
 		//RendererD3D::Renderer::theContextPtr->VSSetShader(contPtr.GetRenderStageTechnique()->GetPass(0)->GetVertexShader(), NULL, NULL);
 		//RendererD3D::Renderer::theContextPtr->PSSetShader(contPtr.GetRenderStageTechnique()->GetPass(0)->GetPixelShader(), NULL, NULL);

@@ -331,79 +331,7 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const c
 					vertex.uvw[1] = 1 - (float)vertexUVs.mData[1];
 					vertex.uvw[2] = 0;
 
-					//	FbxStringList fbxStrings;
-				//	fbxMesh->GetUVSetNames(fbxStrings);
-				//	
-				//	char* uvsetname = fbxStrings.GetStringAt(i);
-				//	FbxGeometryElementUV* fbxUVElement = fbxMesh->GetElementUV(uvsetname);
-				//	if (!fbxUVElement)
-				//		continue;
-				//	
-				//	bool okuvindex = fbxUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-				//	
-				//	const int indexcount = (okuvindex) ? fbxUVElement->GetIndexArray().GetCount() : 0;
-				//	if (polygoncounter < indexcount)
-				//	{
-				//		FbxVector2 UVs;
-				//		int uvindex;
-				//		if (okuvindex)
-				//			uvindex = fbxUVElement->GetIndexArray().GetAt(polygoncounter);
-				//		else
-				//			uvindex = polygoncounter;
-				//		UVs = fbxUVElement->GetDirectArray().GetAt(uvindex);
-				//		vertex.uvw[0] = (float)UVs.mData[0];
-				//		vertex.uvw[1] = (float)UVs.mData[1];
-				//		vertex.uvw[1] = 1 - vertex.uvw[1];
-				//		vertex.uvw[2] = 0;
-				//	
-				//		polygoncounter ++;
-				//	}
-					// alternative UV
-
-
-				
-
-
-
-
-
-					// UV Container
-			//		std::vector<float[2]> UVList;
-			//		// Loop for each poly
-			//		//for (int Poly(0); Poly < fbxMesh->GetPolygonCount(); Poly++)
-			//		//{
-			//			// Get number of verts in this poly
-			//		//const int NumVertices = fbxMesh->GetPolygonSize(k);
-			//
-			//			// Loop for each vert in poly
-			//		//	for (int Vertex(0); Vertex < NumVertices; Vertex++)
-			//		//	{
-			//				FbxVector2 fbxTexCoord;
-			//				FbxStringList UVSetNameList;
-			//
-			//				// Get the name of each set of UV coords
-			//				fbxMesh->GetUVSetNames(UVSetNameList);
-			//
-			//				// Get the UV coords for this vertex in this poly which belong to the first UV set
-			//				// Note: Using 0 as index into UV set list as this example supports only one UV set
-			//
-			//
-			//
-			//				bool mapped = true;
-			//				fbxMesh->GetPolygonVertexUV(vertexindex, k, UVSetNameList.GetStringAt(0), fbxTexCoord, mapped);
-			//
-			//				// Convert to floats
-			//				float UVCoord[3];
-			//				vertex.uvw[0] = static_cast<float>(fbxTexCoord[0]);
-			//				vertex.uvw[1] = static_cast<float>(fbxTexCoord[1]);
-			//				vertex.uvw[2] = 0.0f;
-			//				// Store UV
-			//				//UVList.push_back(UVCoord);
-			//		//	}
-					//}
-
-
-				// NORMALS!
+					// NORMALS!
 
 					FbxGeometryElementNormal* normalelement = fbxMesh->GetElementNormal();
 
@@ -433,15 +361,6 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const c
 
 		}
 	}
-	//std::vector<VERTEX> UVvector; 
-	//LoadUVInformation(fbxMesh, &UVvector);
-	//
-	//for (size_t i = 0; i < outVertexVector->size(); i++)
-	//{
-	//	outVertexVector->operator[](i).uvw[0] = UVvector.operator[](i).uvw[0];
-	//	outVertexVector->operator[](i).uvw[1] = UVvector.operator[](i).uvw[1];
-	//	outVertexVector->operator[](i).uvw[2] = UVvector.operator[](i).uvw[2];
-	//}
 
 	return S_OK;
 }

@@ -7,25 +7,38 @@ class RenderSet
 {
 	friend class Renderer;
 public:
-	RenderSet();
+	RenderSet(){};
 	~RenderSet()
 	{
-		delete head;
+		//if (headPtr)
+		//{
+		//delete headPtr;
+
+		//}
 	};
 
-	RenderNode* head;
+	RenderSet *renderSetPtr;
 
-	inline RenderNode * GetHead() { return head; }
+	/// The first item in the render batch.
+	RenderNode *headPtr;
+	/// The last item in the render batch.
+	RenderNode *tailPtr;
+
+	inline RenderNode * GetHead() { return headPtr; }
 
 	inline void RenderSet::AddRenderNode(RenderNode *nodePtr)
 	{
-		nodePtr->SetNext(head);
-		head = nodePtr;
+		nodePtr->SetNext(headPtr);
+		headPtr = nodePtr;
+	}
+
+	inline void RenderSet::ClearRenderSet(void)
+	{
+
+		headPtr = tailPtr = nullptr;
 	}
 
 
-
-private:
 
 };
 

@@ -81,6 +81,9 @@
     <ClInclude Include="XTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JunkCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

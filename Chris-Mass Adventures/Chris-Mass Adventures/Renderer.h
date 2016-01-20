@@ -73,7 +73,7 @@ namespace RendererD3D
 		static ID3D11Buffer				* VertexBufferModel;
 
 		static std::vector<VERTEX> vertexvector;
-		
+		static RenderSet renderSet;
 
 		// objects 
 		//OBJECT cube;
@@ -84,6 +84,7 @@ namespace RendererD3D
 		//RenderNode cubeNode;
 		// Functions
 		std::vector<RenderNode * > renderNodePtr;
+		static std::vector<ID3D11Buffer *> modelBuffers;
 		//std::vector<RenderContext * > renderContextPtr;
 
 		static void SetPerObjectData(DirectX::XMFLOAT4X4 &mMVP, DirectX::XMFLOAT4X4 &mWorld);
@@ -132,7 +133,7 @@ namespace RendererD3D
 			theContextPtr->ClearDepthStencilView(theDepthStencilViewPtr, clearFlags, depth, stencil);
 		}
 
-		static void Run();
+		static void Run(double deletaTime);
 		
 		inline static void Present(UINT syncInterval = 0, UINT flags = 0)
 		{

@@ -50,7 +50,7 @@ VS_OUTPUT main(V_IN input)
 	output.normal = input.nrm;
 	output.pos = float4(localH);
 	output.wPos = mul(float4(input.pos.xyz, 1.0f), worldMatrix);
-	output.TexCoord = float3(input.uvm.xy, 0.0f);
+	output.TexCoord = float2(input.uvm.xy);
 
 	return output;
 }

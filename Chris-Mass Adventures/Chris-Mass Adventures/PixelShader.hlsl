@@ -1,4 +1,4 @@
-
+#pragma pack_matrix(row_major) 
 
 texture2D	 baseTexture			: register(t0); // first texture
 SamplerState filters[2]				: register(s0);
@@ -19,8 +19,5 @@ float4 main( P_IN input ) : SV_TARGET
 
 	float3 norm = normalize(input.nrm);
 	float4 finalColor = baseColor;
-
-
-
 	return finalColor;
 }
