@@ -13,13 +13,14 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 // Our oubjects 
 RendererD3D::Renderer * rendererInstance;
 
-
+#include "XTime.h"
 
 #include "RenderShape.h"
 //RenderShape cube; 
 
 CAMERA camera;
-
+XTime xTime;
+double deltatime = 0.0f;
 
 
 // Forward declarations of functions included in this code module:

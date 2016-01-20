@@ -40,7 +40,7 @@ cbuffer SCENE : register(b1)
 
 VS_OUTPUT main(V_IN input) 
 {
-	VS_OUTPUT output = (VS_OUTPUT)0;
+	VS_OUTPUT output;
 
 	float4 localH = float4(input.pos.xyz, 1);
 	localH = mul(localH, worldMatrix);
@@ -48,9 +48,9 @@ VS_OUTPUT main(V_IN input)
 	localH = mul(localH, projection_matrix);
 
 	output.normal = input.nrm;
-	output.pos = localH;
+	output.pos = float4(localH);
 	output.wPos = mul(float4(input.pos.xyz, 1.0f), worldMatrix);
-	output.TexCoord = input.uvm.xy;
+	output.TexCoord = float3(input.uvm.xy, 0.0f);
 
 	return output;
 }

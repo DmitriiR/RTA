@@ -8,6 +8,8 @@
 #include "Assets\Cube.h"
 #include "FBXStuff.h"
 
+
+
 /////////// DIRECT INPUT
 static IDirectInputDevice8 * DIKeyboard;
 static IDirectInputDevice8 * DIMouse;
@@ -32,7 +34,7 @@ float moveBackForward = 0.0f;
 float camYaw = 0.0f;
 float camPitch = 0.0f;
 float cam_View_Angle = 90.0f;
-float movemet_speed = 0.015f; // camera movement speed
+float movemet_speed = 0.225f; // camera movement speed
 bool first_person = false;
 
 XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -277,16 +279,21 @@ namespace RendererD3D
 		CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
+		
 
-		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbm\\TestCube.dds", NULL, &CubesTexture);
-
+		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
+		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
+		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
+		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
 		// model code for testing
 		//std::vector<VERTEX> vertexvector;
 
 	//MakeCube();
 		// getting the fbx cube!
-		hr = fbxstuff.NormalsAndUVsToo(&vertexvector, "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
-
+		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump");
+		 hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
+	//	hr = fbxstuff.LoadFBX(vertexvector,   "Assets\\WoodBox\\Box");
+	//	hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Deposit_Box\\Deposit_Box");
 		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
 		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
 
@@ -294,7 +301,7 @@ namespace RendererD3D
 		verteciesBufferDesc_cube.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		int size = sizeof(VERTEX) * vertexvector.size();
 		verteciesBufferDesc_cube.ByteWidth = sizeof(VERTEX) * vertexvector.size();
-		verteciesBufferDesc_cube.MiscFlags = 0;
+		verteciesBufferDesc_cube.MiscFlags		= 0;
 		verteciesBufferDesc_cube.CPUAccessFlags = 0;
 		verteciesBufferDesc_cube.StructureByteStride = 0;
 
@@ -357,6 +364,12 @@ namespace RendererD3D
 		   /// Pipeline																				   |
 			XMMATRIX model_view = XMMatrixInverse(nullptr, camera.view_matrix);
 			model_world = XMMatrixIdentity();
+			
+			model_world = XMMatrixIdentity();
+			model_world = XMMatrixRotationX(-90.0f);
+			model_world = model_world * XMMatrixTranslation(0.0f, 1.0f, 40.0f);
+
+
 			///// Input Input-Assembler 
 			unsigned int stride = sizeof(VERTEX);
 			unsigned int offset = 0;
@@ -379,7 +392,10 @@ namespace RendererD3D
 			Renderer::theContextPtr->PSSetSamplers(0, 1, &CubesTexSamplerState);
 			Renderer::theContextPtr->PSSetShaderResources(0, 1, &CubesTexture);									// << Texture / shader resouce view	
 			///// Output Merger, DRAW
-			Renderer::theContextPtr->Draw(84,0);			    /// Draw without index
+			D3D11_BUFFER_DESC desc = { 0 };
+			VertexBufferModel->GetDesc(&desc);
+			UINT uiNumElements = desc.ByteWidth / sizeof(VERTEX);
+			Renderer::theContextPtr->Draw(uiNumElements, 0);													/// Draw without index
 		//  \ ___________________________________________________________________________________________/
 
 	}

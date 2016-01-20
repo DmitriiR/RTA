@@ -16,11 +16,13 @@
 // testing stuff, not going into the final engine as an include for this file
 #include "RenderMesh.h"
 #include "Assets\Cube.h"
-
+#include <ctime>
 //#include "RenderShape.h"
 //#include "RenderContext.h"
 
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
+
+
 
 //class RenderSet; // forward calss declaration 
 

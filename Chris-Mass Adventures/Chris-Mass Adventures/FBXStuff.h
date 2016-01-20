@@ -15,14 +15,25 @@ public:
 	FbxImporter* fbxImporter = nullptr;
 	FbxMesh* fbxMesh = nullptr;
 
+
 	struct MyVertex
 	{
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT2 uvm;
 		DirectX::XMFLOAT3 nrm;
 	};
+
+	struct BinaryHeader
+	{
+		int file_size;
+		int vector_size;
+		int fileversion;
+		FbxLocalTime timestamp;
+	};
+
 public:
-	HRESULT NormalsAndUVsToo(std::vector<VERTEX>* outVertexVector, const char * _Filename);
-	HRESULT BinaryOut(std::vector<VERTEX>inVertexVector, const char* _Filename);
-	
+	HRESULT LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Filename);
+	HRESULT FBXStuff::BinaryOut(std::vector<VERTEX>&inVertexVector, FbxIOFileHeaderInfo& fileheader, const char* _Filename);
+		HRESULT BinaryIn(std::vector<VERTEX>&outVertexVector, FbxIOFileHeaderInfo& fileheader, const char* _Filename);
+
 };
