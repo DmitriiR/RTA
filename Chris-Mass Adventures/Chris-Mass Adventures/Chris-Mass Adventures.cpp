@@ -59,6 +59,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
+		xTime.Signal();
+		deltatime += xTime.Delta();
+
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
@@ -67,7 +70,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		// OUR Primary Loop
 		rendererInstance->DetectInput();
-		rendererInstance->Run();
+		rendererInstance->Run(deltatime);
 		rendererInstance->Present();
 		
 		/////////////////////////////////////////////////////////////////////////////////////////////		 

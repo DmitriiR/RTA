@@ -7,6 +7,9 @@ class RenderNode
 {
 protected: RenderNode * next;
 public:
+
+	
+
 	RenderNode::RenderNode(){ next = nullptr; }
 
 	RenderFunc Renderfunc;

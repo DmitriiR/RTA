@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
 typedef unsigned int		uint;
@@ -51,14 +50,6 @@ float3 gCameraDir;
 const static int REGISTER_SLOT = 1;
 #endif
 CONSTANT_BUFFER_END
-
-
-CONSTANT_BUFFER_BEGIN(dirlight, b2)
-
-float4x4 dir_light_pos;
-
-CONSTANT_BUFFER_END
-
 
 struct CAMERA
 {

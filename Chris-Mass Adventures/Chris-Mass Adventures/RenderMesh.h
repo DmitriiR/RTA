@@ -5,6 +5,7 @@
 //template <typename VertexFormat>
 class RenderMesh
 {
+	ID3D11Buffer				* vertexBuffer;
  
 	/// The number of primitives defined in this mesh
 	UINT                        numPrimitives;
@@ -39,7 +40,10 @@ public:
 	inline unsigned int GetStartIndex() const { return startIndex; }
 	inline unsigned int GetVertCount() const { return numVertices; }
 	inline unsigned int GetStartVertex() const { return startVertex; }
-	
+	inline ID3D11Buffer* GetVertexBuffer() { return vertexBuffer; }
+
+	inline void SetVertexBuffer(ID3D11Buffer* _buffer) { vertexBuffer = _buffer;}
+
 	// classs handles the main pbject loading 
 	inline RenderMesh *RenderMesh::Load(const char* pInFileName, const char* pVertexFormat)
 	{

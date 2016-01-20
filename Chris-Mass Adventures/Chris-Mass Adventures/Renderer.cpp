@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "RenderNode.h"
+//#include "RenderShape.h"
 #include "DDSTextureLoader.h"
 
-//#include "RenderShape.h"
+#include "RenderShape.h"
 //#include "RenderContext.h"
 #include "Assets\Cube.h"
 #include "FBXStuff.h"
@@ -41,7 +42,7 @@ XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 XMVECTOR DefaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 XMVECTOR camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 XMVECTOR camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
 XMVECTOR camPosition = XMVectorSet(0.0f, 0.0f, -4.0f, 0.0f); // initial camera position
 XMVECTOR camTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);;
 // the directional light's vector
@@ -97,6 +98,9 @@ namespace RendererD3D
 
 	// the array of vertexes for our mesh
 	std::vector<VERTEX> Renderer::vertexvector;
+
+	RenderSet Renderer::renderSet;
+	std::vector<ID3D11Buffer *> Renderer::modelBuffers;
 
 	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 	{
@@ -293,17 +297,26 @@ namespace RendererD3D
 
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
-		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
-		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
+		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
+		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
+		//Chris - Mass Adventures\Assets\Teddy\
+		//Teddy_Attack1.fbx
+
 		// model code for testing
 		//std::vector<VERTEX> vertexvector;
 
-	//MakeCube();
+		//MakeCube();
 		// getting the fbx cube!
-		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump");
-		 hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
-	//	hr = fbxstuff.LoadFBX(vertexvector,   "Assets\\WoodBox\\Box");
-	//	hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Deposit_Box\\Deposit_Box");
+		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Box_Jump\\Box_Jump.fbx"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
+		// hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Girl\\Girl.fbx");
+	//	hr = fbxstuff.NormalsAndUVsToo(&vertexvector,   "Assets\\WoodBox\\Box.fbx");
+		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Deposit_Box\\Deposit_Box.FBX");
+		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx.FBX");
+		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman.FBX");
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
+		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
+
 		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
 		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
 
@@ -325,9 +338,28 @@ namespace RendererD3D
 
 		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertexBufferModel);
 		
+		modelBuffers.push_back(VertexBufferModel);
+
+		RenderShape shape;
+		XMFLOAT4X4 objectMatrix;
+		XMStoreFloat4x4(&objectMatrix, model_world);
+    	
+		shape.Initialize(&objectMatrix);
+	
+		RenderMesh mesh;
+		mesh.SetVertexBuffer(VertexBufferModel);
+		shape.SetMesh(&mesh);
+		
+		RenderNode node;
+		
+		renderSet.AddRenderNode(&node);
+		
+		
 	}
 
-	void Renderer::Run()
+
+
+	void Renderer::Run(double deltaTime)
 	{
 		if (!Renderer::theContextPtr) return;
 		
@@ -336,56 +368,38 @@ namespace RendererD3D
 		
 		Renderer::theContextPtr->OMSetRenderTargets(1, &theRenderTargetViewPtr, Renderer::theDepthStencilViewPtr);
 		Renderer::theContextPtr->ClearDepthStencilView(Renderer::theDepthStencilViewPtr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 1);
+
+		/*
+		if (renderSet.headPtr)
+		{
+			Renderer::Render(renderSet);
+		}
+		*/
+
+		//RenderSet set;
+		//RenderNode node;
+		//RenderMesh mesh;
 		
-		//float blendFactor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
-		//Renderer::theContextPtr->OMSetBlendState(0, 0, 0xffffffff);						// sets up the default blend state for opaque objects 
-		//Renderer::theContextPtr->OMSetBlendState(Transparency, blendFactor, 0xffffffff);	//Set the blend state for transparent objects
-/*
-		//**********************************      Cube      ***************************************\
-		   /// Pipeline																				   |
-			XMMATRIX viewmatrix_copy = XMMatrixInverse(nullptr, camera.view_matrix);
-     		cubeWorld = XMMatrixIdentity();
-			///// Input Input-Assembler 
-			unsigned int stride = sizeof(VERTEX);
-			unsigned int offset = 0;
-			////ID3D11Buffer* pNullBuffer = nullptr;
-			Renderer::theContextPtr->IASetIndexBuffer(IndexBufferCube, DXGI_FORMAT_R32_UINT, 0);				// model index buffer
-			Renderer::theContextPtr->IASetVertexBuffers(0, 1, &VertBufferCube, &stride, &offset);				// <<Vertex buffer from geometry goes here 
-			Renderer::theContextPtr->IASetInputLayout(pInputLayout);
-			Renderer::theContextPtr->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			///// Vertex Shader
-			Renderer::theContextPtr->VSSetShader(VS_Default, nullptr, 0);
-			Renderer::UpdateConstantBuffer(cubeWorld, m_CB_Cube);												//<< world matrix
-			Renderer::UpdateConstantBuffer(camera, m_CB_Camera);											    //<< view, projection
-			Renderer::theContextPtr->VSSetConstantBuffers(0, 1, &m_CB_Cube);
-			Renderer::theContextPtr->VSSetConstantBuffers(1, 1, &m_CB_Camera);
-			///// Hull Shader 	/// Tesselator	/// Domain Shader	/// Geometry Shader
-			///// Rasterizer
-			Renderer::theContextPtr->RSSetState(CWcullMode);
-			///// Pixel-Shader
-			Renderer::theContextPtr->PSSetShader(PS_Default, nullptr, 0);
-			Renderer::theContextPtr->PSSetSamplers(0, 1, &CubesTexSamplerState);
-			Renderer::theContextPtr->PSSetShaderResources(0, 1, &CubesTexture);									// << Texture / shader resouce view	
-			///// Output Merger, DRAW
-			//Renderer::theContextPtr->DrawIndexed(GetNumberOf_Indecies(IndexBufferCube, sizeof(UINT)), 0, 0);			    /// Draw without index
-		//  \ ___________________________________________________________________________________________/
-*/		
+		//set.AddRenderNode(&node);
+		
+
 			//**********************************      Model      ***************************************\
 		   /// Pipeline																				   |
 			XMMATRIX model_view = XMMatrixInverse(nullptr, camera.view_matrix);
-			model_world = XMMatrixIdentity();
-			
-			model_world = XMMatrixIdentity();
-			model_world = XMMatrixRotationX(-90.0f);
-			model_world = model_world * XMMatrixTranslation(0.0f, 1.0f, 40.0f);
-
+			XMMATRIX tempMatrix =  XMMatrixIdentity();
+			//tempMatrix = tempMatrix * XMMatrixRotationX(-90.0f);
+			//tempMatrix = tempMatrix * XMMatrixRotationY(deltaTime);
+			///tempMatrix = tempMatrix * XMMatrixRotationAxis(camUp, 0.0f);
+			//tempMatrix = tempMatrix * XMMatrixTranslation(0.0f, -20.0f, 100.0f);
+			model_world = tempMatrix;
 
 			///// Input Input-Assembler 
-			unsigned int stride = sizeof(VERTEX);
+			unsigned int stride = sizeof(VERTEX); 
 			unsigned int offset = 0;
+
 			////ID3D11Buffer* pNullBuffer = nullptr;
 			//Renderer::theContextPtr->IASetIndexBuffer(IndexBufferCube, DXGI_FORMAT_R32_UINT, 0);				// model index buffer
-			Renderer::theContextPtr->IASetVertexBuffers(0, 1, &VertexBufferModel, &stride, &offset);				// <<Vertex buffer from geometry goes here 
+			Renderer::theContextPtr->IASetVertexBuffers(0, 1, &modelBuffers[0], &stride, &offset);				// <<Vertex buffer from geometry goes here 
 			Renderer::theContextPtr->IASetInputLayout(pInputLayout);
 			Renderer::theContextPtr->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			///// Vertex Shader
@@ -408,7 +422,7 @@ namespace RendererD3D
 			Renderer::theContextPtr->PSSetShaderResources(0, 1, &CubesTexture);									// << Texture / shader resouce view	
 			///// Output Merger, DRAW
 			D3D11_BUFFER_DESC desc = { 0 };
-			VertexBufferModel->GetDesc(&desc);
+			modelBuffers[0]->GetDesc(&desc);
 			UINT uiNumElements = desc.ByteWidth / sizeof(VERTEX);
 			Renderer::theContextPtr->Draw(uiNumElements, 0);													/// Draw without index
 		//  \ ___________________________________________________________________________________________/
@@ -661,6 +675,15 @@ namespace RendererD3D
 		return;
 	}
 
+	void Renderer::SetPerObjectData(DirectX::XMFLOAT4X4 &mMVP, DirectX::XMFLOAT4X4 &mWorld)
+	{
+	
+	}
+	void Renderer::SetPerObjectData(DirectX::XMMATRIX &mMVP, DirectX::XMMATRIX &mWorld)
+	{
+	
+	}
+
 	void Renderer::UpdateCamera()
 	{
 		//XMVECTOR eyePos = XMVectorSet(0.0f, 4.0f, -1.0f, 1.0f);
@@ -669,7 +692,7 @@ namespace RendererD3D
 		//camera.view_matrix = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
 
 
-		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500000000.0f);
+		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500000.0f);
 
 		//camera.projection_matrix = PerspectiveProjectionMatrix(cam_View_Angle, 100.0f, 0.1f, Aspect);
 		//
@@ -686,7 +709,7 @@ namespace RendererD3D
 		//
 		camRight = XMVector3TransformCoord(DefaultRight, temp_RotateOnX);
 		camForward = XMVector3TransformCoord(camTarget, temp_RotateOnY);
-		camUp = XMVector3TransformCoord(camUp, temp_RotateOnY);
+		//XMVector3TransformCoord(camUp, temp_RotateOnY);
 		//
 		camPosition += moveLeftRight* camRight;
 		camPosition += moveBackForward *camForward;
@@ -696,8 +719,11 @@ namespace RendererD3D
 		//
 		camTarget = camPosition + camTarget;
 		//
+		XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		
+		
 		camera.view_matrix = XMMatrixLookAtLH(camPosition, camTarget, camUp);
-
+	
 	}
 	
 	XMMATRIX Renderer::PerspectiveProjectionMatrix(float FOV, float zFar, float zNear, float aspect)
