@@ -47,7 +47,7 @@ VS_OUTPUT main(V_IN input)
 	localH = mul(localH, view_matrix);
 	localH = mul(localH, projection_matrix);
 
-	output.normal = input.nrm;
+	output.normal = normalize(input.nrm);
 	output.pos = float4(localH);
 	output.wPos = mul(float4(input.pos.xyz, 1.0f), worldMatrix);
 	output.TexCoord = float2(input.uvm.xy);

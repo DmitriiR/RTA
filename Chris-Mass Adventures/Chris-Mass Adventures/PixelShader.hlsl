@@ -16,7 +16,7 @@ float4 CalcDirLight(float3 surNormals, float4 surColor, float3 pos, float3 dir_l
 {
 	float3 light_dir = dir_lgt_pos;
 		float4 light_ambient = float4(0.0f, 0.0f, 0.0f, 1.0f);
-		float4 light_diffuse = float4(1.0f, 0.0f, 0.0f, 1.0f);
+		float4 light_diffuse = float4(1.0f, 1.0f, 0.0f, 0.0f);
 
 		float lightIntensity = saturate(dot(-light_dir, surNormals));
 	float4 color = saturate(light_diffuse * surColor * lightIntensity);
@@ -31,7 +31,7 @@ float4 main( P_IN input ) : SV_TARGET
 	float3 norm = normalize(input.nrm);
 	float4 DirectionalLightColor = CalcDirLight(norm, baseColor, input.pos, float3(0.0f,10.0f,-35.0f));
 
-	float4 finalColor = DirectionalLightColor;
+	float4 finalColor = baseColor + DirectionalLightColor;
 
 
 

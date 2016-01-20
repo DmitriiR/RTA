@@ -10,6 +10,8 @@ struct VERTEX
 	float pos[3];
 	float uvw[3];
 	float nrm[3];
+	float bin[3];
+	float tan[3];
 
 };
 

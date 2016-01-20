@@ -297,9 +297,9 @@ namespace RendererD3D
 
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
-		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
+		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
 		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
-		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
+		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
 		//Chris - Mass Adventures\Assets\Teddy\
 		//Teddy_Attack1.fbx
 
@@ -308,13 +308,13 @@ namespace RendererD3D
 
 		//MakeCube();
 		// getting the fbx cube!
-		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Box_Jump\\Box_Jump.fbx"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
-		// hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Girl\\Girl.fbx");
-	//	hr = fbxstuff.NormalsAndUVsToo(&vertexvector,   "Assets\\WoodBox\\Box.fbx");
-		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Deposit_Box\\Deposit_Box.FBX");
-		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx.FBX");
-		//hr = fbxstuff.NormalsAndUVsToo(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman.FBX");
-		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
+		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
+	//	hr = fbxstuff.LoadFBX(&vertexvector,   "Assets\\WoodBox\\Box");
+		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Deposit_Box\\Deposit_Box");
+		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx");
+		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman");
+		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
 
 		D3D11_BUFFER_DESC verteciesBufferDesc_cube;

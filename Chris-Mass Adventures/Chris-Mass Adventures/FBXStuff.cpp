@@ -95,6 +95,8 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 					vertex.uvw[2] = 0;
 
 					FbxGeometryElementNormal* normalelement = fbxMesh->GetElementNormal();
+					FbxGeometryElementBinormal* binormalelement = fbxMesh->GetElementBinormal();
+					FbxGeometryElementTangent* tangentelement = fbxMesh->GetElementTangent();
 
 					if (!normalelement)
 						continue;
@@ -103,17 +105,42 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 					//	return E_FAIL;
 
 					int normalsindex = 0;
+					int binormalindex = 0;
+					int tangentindex = 0;
 
+					// tries to get normals
 					if (normalelement->GetReferenceMode() == FbxGeometryElement::eDirect)
 						normalsindex = vertexindex;
-					if (normalelement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+					else if (normalelement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
 						normalsindex = normalelement->GetIndexArray().GetAt(vertexindex);
 					FbxVector4 normals = normalelement->GetDirectArray().GetAt(normalsindex);
 
+					//tries to get binormals
+					if (binormalelement->GetReferenceMode() == FbxGeometryElement::eDirect)
+						binormalindex = vertexindex;
+					else if (binormalelement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+						binormalindex = binormalelement->GetIndexArray().GetAt(vertexindex);
+					FbxVector4 binormals = binormalelement->GetDirectArray().GetAt(binormalindex);
+
+					//tries to get tangents
+					if (tangentelement->GetReferenceMode() == FbxGeometryElement::eDirect)
+						tangentindex = vertexindex;
+					else if (tangentelement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+						tangentindex = tangentelement->GetIndexArray().GetAt(vertexindex);
+					FbxVector4 tangents = tangentelement->GetDirectArray().GetAt(tangentindex);
+					
 					/////
 					vertex.nrm[0] = (float)normals.mData[0];
 					vertex.nrm[1] = (float)normals.mData[1];
 					vertex.nrm[2] = (float)normals.mData[2];
+
+					vertex.bin[0] = (float)binormals.mData[0];
+					vertex.bin[1] = (float)binormals.mData[1];
+					vertex.bin[2] = (float)binormals.mData[2];
+
+					vertex.tan[0] = (float)tangents.mData[0];
+					vertex.tan[1] = (float)tangents.mData[1];
+					vertex.tan[2] = (float)tangents.mData[2];
 
 					outVertexVector.push_back(vertex);
 				}
