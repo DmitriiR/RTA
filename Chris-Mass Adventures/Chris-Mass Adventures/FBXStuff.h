@@ -22,12 +22,18 @@ public:
 		DirectX::XMFLOAT2 uvm;
 		DirectX::XMFLOAT3 nrm;
 	};
-public:
-	//std::vector<MyVertex>* UVvector;
 
-	HRESULT LoadFBX(std::vector<MyVertex>* outVertexVector);
-	HRESULT UVsToo(std::vector<MyVertex>* outVertexVector);
-	void LoadUVInformation(FbxMesh* pMesh, std::vector<VERTEX>* outVertexVector);
-	HRESULT NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const char * _Filename);
-	
+	struct BinaryHeader
+	{
+		int file_size;
+		int vector_size;
+		int fileversion;
+		FbxLocalTime timestamp;
+	};
+
+public:
+	HRESULT LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Filename);
+	HRESULT FBXStuff::BinaryOut(std::vector<VERTEX>&inVertexVector, FbxIOFileHeaderInfo& fileheader, const char* _Filename);
+		HRESULT BinaryIn(std::vector<VERTEX>&outVertexVector, FbxIOFileHeaderInfo& fileheader, const char* _Filename);
+
 };

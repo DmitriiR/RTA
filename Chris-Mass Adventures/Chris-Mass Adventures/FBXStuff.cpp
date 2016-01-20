@@ -1,260 +1,17 @@
 #include "stdafx.h"
 //#include "fbxsdk.h"
 #include <vector>
-
+#include <fstream>
 #include "FBXStuff.h"
 
-HRESULT FBXStuff::LoadFBX(std::vector<MyVertex>* outVertexVector)
+HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Filename)
 {
-	//if (fbxManager == nullptr)
-	//{
-	//	fbxManager = FbxManager::Create(); // creates the fbx manager
-	//
-	//	fbxIOSettings = FbxIOSettings::Create(fbxManager, "IOSROOT"); // creates the IOSettings
-	//	fbxManager->SetIOSettings(fbxIOSettings); // sets the manager's IOSettings to be the new settins we just created
-	//}
-	//fbxImporter = FbxImporter::Create(fbxManager, ""); // creates the importer
-	//fbxScene = FbxScene::Create(fbxManager, ""); // create the scene
-	//
-	//bool OKImport = fbxImporter->Initialize("F:\Program Files (x86)\RTA\FBX\Box_Jump.fbx", -1, fbxManager->GetIOSettings());
-	//if (!OKImport)
-	//	return E_FAIL;
-	//
-	//OKImport = fbxImporter->Import(fbxScene);
-	//if (!OKImport)
-	//	return E_FAIL;
-	//
-	//fbxImporter->Destroy();
-	//
-	//FbxNode* fbxRootNode = fbxScene->GetRootNode();
-	//
-	//
-	//if (fbxRootNode)
-	//{
-	//	for (int i = 0; i < fbxRootNode->GetChildCount(); i++)
-	//	{
-	//		FbxNode* fbxChildNode = fbxRootNode->GetChild(i);
-	//
-	//
-	//		if (fbxChildNode->GetNodeAttribute() == NULL)
-	//			continue;
-	//
-	//		FbxNodeAttribute::EType fbxNodeAttributeType = fbxChildNode->GetNodeAttribute()->GetAttributeType();
-	//		if (fbxNodeAttributeType != FbxNodeAttribute::eMesh)
-	//			continue;
-	//
-	//		fbxMesh = (FbxMesh*)fbxChildNode->GetNodeAttribute();
-	//		FbxVector4* vertices = fbxMesh->GetControlPoints();
-	//
-	//		for (int j = 0; j < fbxMesh->GetPolygonCount(); j++)
-	//		{
-	//			int numverts = fbxMesh->GetPolygonSize(j);
-	//
-	//			for (int k = 0; k < numverts; k++)
-	//			{
-	//				int vertexindex = fbxMesh->GetPolygonVertex(j, k);
-	//
-	//				MyVertex vertex;
-	//				vertex.pos[0] = (float)vertices[vertexindex].mData[0];
-	//				vertex.pos[1] = (float)vertices[vertexindex].mData[0];
-	//				vertex.pos[2] = (float)vertices[vertexindex].mData[0];
-	//				outVertexVector->push_back(vertex);
-	//			}
-	//		}
-	//
-	//	}
-	//}
-	return S_OK;
-}
-
-HRESULT FBXStuff::UVsToo(std::vector<MyVertex>* outVertexVector)
-{
-	//if (fbxManager == nullptr)
-	//{
-	//	fbxManager = FbxManager::Create(); // creates the fbx manager
-	//
-	//	fbxIOSettings = FbxIOSettings::Create(fbxManager, "IOSROOT"); // creates the IOSettings
-	//	fbxManager->SetIOSettings(fbxIOSettings); // sets the manager's IOSettings to be the new settins we just created
-	//}
-	//fbxImporter = FbxImporter::Create(fbxManager, ""); // creates the importer
-	//fbxScene = FbxScene::Create(fbxManager, ""); // create the scene
-	//
-	//bool OKImport = fbxImporter->Initialize("F:\Program Files (x86)\RTA\FBX\Box_Jump.fbx", -1, fbxManager->GetIOSettings());
-	//if (!OKImport)
-	//	return E_FAIL;
-	//
-	//OKImport = fbxImporter->Import(fbxScene);
-	//if (!OKImport)
-	//	return E_FAIL;
-	//
-	//fbxImporter->Destroy();
-	//
-	//FbxNode* fbxRootNode = fbxScene->GetRootNode();
-	//
-	//if (fbxRootNode)
-	//{
-	//	for (int i = 0; i < fbxRootNode->GetChildCount(); i++)
-	//	{
-	//		FbxNode* fbxChildNode = fbxRootNode->GetChild(i);
-	//
-	//
-	//		if (fbxChildNode->GetNodeAttribute() == NULL)
-	//			continue;
-	//
-	//		FbxNodeAttribute::EType fbxNodeAttributeType = fbxChildNode->GetNodeAttribute()->GetAttributeType();
-	//		if (fbxNodeAttributeType != FbxNodeAttribute::eMesh)
-	//			continue;
-	//
-	//		fbxMesh = (FbxMesh*)fbxChildNode->GetNodeAttribute();
-	//
-	//		// getting the UV's from the mesh!
-	//
-	//		FbxStringList fbxStrings;
-	//		fbxMesh->GetUVSetNames(fbxStrings);
-	//		for (int UVI = 0; UVI < fbxStrings.GetCount(); UVI++)
-	//		{
-	//			char* uvsetname = fbxStrings.GetStringAt(UVI);
-	//			FbxGeometryElementUV* fbxUVElement = fbxMesh->GetElementUV(uvsetname);
-	//			if (!fbxUVElement)
-	//				continue;
-	//
-	//			if (fbxUVElement->GetMappingMode() != FbxGeometryElement::eByPolygonVertex)
-	//				return E_FAIL;
-	//
-	//			//index array, where holds the index referenced to the uv data
-	//			bool okuvindex = fbxUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;;
-	//
-	//			FbxVector4* vertices = fbxMesh->GetControlPoints();
-	//
-	//			for (int j = 0; j < fbxMesh->GetPolygonCount(); j++)
-	//			{
-	//				int numverts = fbxMesh->GetPolygonSize(j);
-	//
-	//				for (int k = 0; k < numverts; k++)
-	//				{
-	//					int vertexindex = fbxMesh->GetPolygonVertex(j, k);
-	//
-	//					//gets the uv index and fills the fbxvctor 2 of the array of uvs at an index
-	//					/////
-	//					FbxVector4 UVs;
-	//					int uvindex;
-	//					if (okuvindex)
-	//						uvindex = fbxUVElement->GetIndexArray().GetAt(vertexindex);
-	//					else
-	//						uvindex = vertexindex;
-	//					UVs = fbxUVElement->GetDirectArray().GetAt(uvindex);
-	//					/////
-	//					MyVertex vertex;
-	//					vertex.pos[0] = (float)vertices[vertexindex].mData[0];
-	//					vertex.pos[1] = (float)vertices[vertexindex].mData[0];
-	//					vertex.pos[2] = (float)vertices[vertexindex].mData[0];
-	//					vertex.uv[0] = (float)UVs.mData[0];
-	//					vertex.uv[1] = (float)UVs.mData[1];
-	//					vertex.uv[2] = (float)UVs.mData[2];
-	//
-	//
-	//
-	//					outVertexVector->push_back(vertex);
-	//				}
-	//			}
-	//		}
-	//
-	//	}
-	//}
-	return S_OK;
-}
-
-void FBXStuff::LoadUVInformation(FbxMesh* pMesh, std::vector<VERTEX>* outVertexVector)
-{
-	//get all UV set names
-	FbxStringList lUVSetNameList;
-	pMesh->GetUVSetNames(lUVSetNameList);
-
-	//iterating over all uv sets
-	for (int lUVSetIndex = 0; lUVSetIndex < lUVSetNameList.GetCount(); lUVSetIndex++)
-	{
-		//get lUVSetIndex-th uv set
-		const char* lUVSetName = lUVSetNameList.GetStringAt(lUVSetIndex);
-		const FbxGeometryElementUV* lUVElement = pMesh->GetElementUV(lUVSetName);
-
-		if (!lUVElement)
-			continue;
-
-		// only support mapping mode eByPolygonVertex and eByControlPoint
-		if (lUVElement->GetMappingMode() != FbxGeometryElement::eByPolygonVertex &&
-			lUVElement->GetMappingMode() != FbxGeometryElement::eByControlPoint)
-			return;
-
-		//index array, where holds the index referenced to the uv data
-		const bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-		const int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
-
-		//iterating through the data by polygon
-		const int lPolyCount = pMesh->GetPolygonCount();
-
-		if (lUVElement->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-		{
-			for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
-			{
-				// build the max index array that we need to pass into MakePoly
-				const int lPolySize = pMesh->GetPolygonSize(lPolyIndex);
-				for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
-				{
-					FbxVector2 lUVValue;
-
-					//get the index of the current vertex in control points array
-					int lPolyVertIndex = pMesh->GetPolygonVertex(lPolyIndex, lVertIndex);
-
-					//the UV index depends on the reference mode
-					int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
-
-					lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
-					
-					//User TODO:
-					//Print out the value of UV(lUVValue) or log it to a file
-				}
-			}
-		}
-		else if (lUVElement->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
-		{
-			int lPolyIndexCounter = 0;
-			for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
-			{
-				// build the max index array that we need to pass into MakePoly
-				const int lPolySize = pMesh->GetPolygonSize(lPolyIndex);
-				for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
-				{
-					if (lPolyIndexCounter < lIndexCount)
-					{
-						FbxVector2 lUVValue;
-
-						//the UV index depends on the reference mode
-						int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyIndexCounter) : lPolyIndexCounter;
-
-						lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
-
-						//User TODO:
-						//Print out the value of UV(lUVValue) or log it to a file
-						// Convert to floats
-						VERTEX tempVertexforUV;
-						float UVCoord[3];
-						tempVertexforUV.uvw[0] = static_cast<float>(lUVValue[0]);
-						tempVertexforUV.uvw[1] = static_cast<float>(lUVValue[1]);
-						tempVertexforUV.uvw[2] = 0.0f;
-						outVertexVector->push_back(tempVertexforUV);
-
-						lPolyIndexCounter++;
-					}
-				}
-			}
-		}
-	}
-}
 
 
+	FbxIOFileHeaderInfo* fbxheader = nullptr;
+	std::string filename = std::string(_Filename);
+	filename += ".fbx";
 
-HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const char * _Filename)
-{
 	if (fbxManager == nullptr)
 	{
 		fbxManager = FbxManager::Create(); // creates the fbx manager
@@ -262,10 +19,18 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const c
 		fbxIOSettings = FbxIOSettings::Create(fbxManager, "IOSROOT"); // creates the IOSettings
 		fbxManager->SetIOSettings(fbxIOSettings); // sets the manager's IOSettings to be the new settins we just created
 	}
+
 	fbxImporter = FbxImporter::Create(fbxManager, ""); // creates the importer
 	fbxScene = FbxScene::Create(fbxManager, ""); // create the scene
 
-	bool OKImport = fbxImporter->Initialize(_Filename, -1, fbxManager->GetIOSettings());
+	fbxheader = fbxImporter->GetFileHeaderInfo();
+
+	if (BinaryIn(outVertexVector, (*fbxheader), _Filename) == S_OK)
+	{
+		return S_OK;
+	}
+
+	bool OKImport = fbxImporter->Initialize(filename.c_str(), -1, fbxManager->GetIOSettings());
 	if (!OKImport)
 		return E_FAIL;
 
@@ -276,7 +41,6 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const c
 	fbxImporter->Destroy();
 
 	FbxNode* fbxRootNode = fbxScene->GetRootNode();
-
 
 	if (fbxRootNode)
 	{
@@ -293,8 +57,7 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const c
 				continue;
 
 			fbxMesh = (FbxMesh*)fbxChildNode->GetNodeAttribute();
-
-			FbxLayerElementArrayTemplate<FbxVector2> * UVs;
+			FbxLayerElementArrayTemplate<FbxVector2>* UVs;
 			fbxMesh->GetTextureUV(&UVs);
 
 
@@ -323,15 +86,13 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const c
 					vertex.pos[2] = (float)vertices[vertexindex].mData[2];
 
 					// getting the UV's from the mesh!
-					int uvIndex = fbxMesh->GetTextureUVIndex(j,k);
+					int uvIndex = fbxMesh->GetTextureUVIndex(j, k);
 
 					FbxVector2 vertexUVs = UVs->GetAt(uvIndex);
 
 					vertex.uvw[0] = (float)vertexUVs.mData[0];
 					vertex.uvw[1] = 1 - (float)vertexUVs.mData[1];
 					vertex.uvw[2] = 0;
-
-					// NORMALS!
 
 					FbxGeometryElementNormal* normalelement = fbxMesh->GetElementNormal();
 
@@ -355,12 +116,109 @@ HRESULT FBXStuff::NormalsAndUVsToo(std::vector<VERTEX>& outVertexVector, const c
 					vertex.nrm[2] = (float)normals.mData[2];
 
 					outVertexVector.push_back(vertex);
-
 				}
+
+
 			}
 
 		}
 	}
+	return BinaryOut(outVertexVector, (*fbxheader), _Filename);
+}
 
+HRESULT FBXStuff::BinaryOut(std::vector<VERTEX>&inVertexVector, FbxIOFileHeaderInfo& fileheader, const char* _Filename)
+{
+	std::string filename = std::string(_Filename);
+	filename += ".bin";
+
+	std::fstream binaryStream;
+	if (!binaryStream.is_open())
+		binaryStream.open(filename.c_str(), std::ios_base::out | std::ios_base::binary);
+	else
+		return E_FAIL;
+
+	if (binaryStream.is_open())
+	{
+		// declare header
+		BinaryHeader header;
+
+		// initialize header
+		header.file_size = (inVertexVector.size() * sizeof(VERTEX));
+		header.vector_size = inVertexVector.size();
+		if (fileheader.mFileVersion > 0)
+			header.fileversion = fileheader.mFileVersion;
+		else
+			header.fileversion = -1;
+
+		if (fileheader.mCreationTimeStamp.mYear > 0)
+			header.timestamp = fileheader.mCreationTimeStamp;
+		else
+			header.timestamp.mYear = -1;
+
+		// write out header
+		binaryStream.write((const char*)&header, sizeof(BinaryHeader));
+
+		binaryStream.write((const char*)&inVertexVector[0], header.file_size);
+
+		binaryStream.close();
+	}
+	else
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT FBXStuff::BinaryIn(std::vector<VERTEX>&outVertexVector, FbxIOFileHeaderInfo& fileheader, const char* _Filename)
+{
+	std::string filename = std::string(_Filename);
+	filename += ".bin";
+
+	std::fstream binaryStream;
+	if (!binaryStream.is_open())
+		binaryStream.open(filename.c_str(), std::ios_base::in | std::ios_base::binary);
+	else
+		return E_FAIL;
+
+	if (binaryStream.is_open())
+	{
+		// declare header
+		BinaryHeader header;
+
+		// read in header
+		binaryStream.read((char*)&header, sizeof(BinaryHeader));
+
+		if (header.fileversion != -1)
+		{
+			if (header.fileversion < fileheader.mFileVersion)
+				return E_FAIL;
+		}
+		if (header.timestamp.mYear != -1)
+		{
+			if (header.timestamp.mYear < fileheader.mCreationTimeStamp.mYear)
+				return E_FAIL;
+			else
+				if (header.timestamp.mMonth < fileheader.mCreationTimeStamp.mMonth)
+					return E_FAIL;
+				else
+					if (header.timestamp.mDay < fileheader.mCreationTimeStamp.mDay)
+						return E_FAIL;
+					else
+						if (header.timestamp.mHour < fileheader.mCreationTimeStamp.mHour)
+							return E_FAIL;
+						else
+							if (header.timestamp.mMinute < fileheader.mCreationTimeStamp.mMinute)
+								return E_FAIL;
+							else
+								if (header.timestamp.mSecond < fileheader.mCreationTimeStamp.mSecond)
+									return E_FAIL;
+		}
+
+		outVertexVector.resize(header.file_size);
+		binaryStream.read((char*)&outVertexVector[0], header.file_size);
+
+		binaryStream.close();
+	}
+	else
+		return E_FAIL;
 	return S_OK;
 }
