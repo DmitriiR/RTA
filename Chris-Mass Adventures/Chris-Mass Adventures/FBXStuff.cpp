@@ -115,6 +115,7 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 						normalsindex = normalelement->GetIndexArray().GetAt(vertexindex);
 					FbxVector4 normals = normalelement->GetDirectArray().GetAt(normalsindex);
 
+					/*
 					//tries to get binormals
 					if (binormalelement->GetReferenceMode() == FbxGeometryElement::eDirect)
 						binormalindex = vertexindex;
@@ -128,12 +129,13 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 					else if (tangentelement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
 						tangentindex = tangentelement->GetIndexArray().GetAt(vertexindex);
 					FbxVector4 tangents = tangentelement->GetDirectArray().GetAt(tangentindex);
-					
+					*/
 					/////
 					vertex.nrm[0] = (float)normals.mData[0];
 					vertex.nrm[1] = (float)normals.mData[1];
 					vertex.nrm[2] = (float)normals.mData[2];
 
+					/*
 					vertex.bin[0] = (float)binormals.mData[0];
 					vertex.bin[1] = (float)binormals.mData[1];
 					vertex.bin[2] = (float)binormals.mData[2];
@@ -141,7 +143,7 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 					vertex.tan[0] = (float)tangents.mData[0];
 					vertex.tan[1] = (float)tangents.mData[1];
 					vertex.tan[2] = (float)tangents.mData[2];
-
+					*/
 					outVertexVector.push_back(vertex);
 				}
 

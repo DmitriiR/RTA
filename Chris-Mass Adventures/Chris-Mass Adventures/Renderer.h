@@ -96,6 +96,8 @@ namespace RendererD3D
 		static bool UpdateConstantBuffer(const Type& source, ID3D11Buffer * buffer);
 		static UINT GetNumberOf_Indecies(ID3D11Buffer * buffer, unsigned int DataSize);
 
+		static void CalculateTangentBinormal(VERTEX vertex1, VERTEX vertex2, VERTEX vertex3, XMFLOAT3* tangent, XMFLOAT3* binormal);
+		static void CalculateNormal(XMFLOAT3 tangent, XMFLOAT3 binormal, XMFLOAT3& normal);
 		static void LoadObjects();
 		static void MakeCube();
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);

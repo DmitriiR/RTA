@@ -273,9 +273,11 @@ namespace RendererD3D
 		{
 			{ "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "UVM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NRM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+			{ "NRM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TAN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BIN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
-		theDevicePtr->CreateInputLayout(vertexPosDesc, 3, VertexShader, sizeof(VertexShader), &pInputLayout);
+		theDevicePtr->CreateInputLayout(vertexPosDesc, 5, VertexShader, sizeof(VertexShader), &pInputLayout);
 
 
 
@@ -291,15 +293,18 @@ namespace RendererD3D
 		CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
-		
+		//CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 		// creates the constant buffer for the directional light
+		Dir_Light_pos = XMVectorSet(0.0f, -0.25f, 1.0f, 0.0f);
 		CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
-		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
-		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
+		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
 		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
 		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
+		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Cat\\Catwoman\\Catwoman_Spec.dds", NULL, &CubesTexture);
+
 		//Chris - Mass Adventures\Assets\Teddy\
 		//Teddy_Attack1.fbx
 
@@ -308,14 +313,124 @@ namespace RendererD3D
 
 		//MakeCube();
 		// getting the fbx cube!
-		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
-		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
+		// hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
 	//	hr = fbxstuff.LoadFBX(&vertexvector,   "Assets\\WoodBox\\Box");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Deposit_Box\\Deposit_Box");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
+
+
+		int faceCount;
+		int index = 0;
+		VERTEX vertex1, vertex2, vertex3;
+		XMFLOAT3 tangent, binormal, normal;
+
+		faceCount = vertexvector.size() / 3;
+		for (int i = 0; i < faceCount; i++)
+		{
+			// Get the three vertices for this face from the model.
+			vertex1.pos[0] = vertexvector[index].pos[0];
+			vertex1.pos[1] = vertexvector[index].pos[1];
+			vertex1.pos[2] = vertexvector[index].pos[2];
+
+			vertex1.nrm[0] = vertexvector[index].nrm[0];
+			vertex1.nrm[1] = vertexvector[index].nrm[1];
+			vertex1.nrm[2] = vertexvector[index].nrm[2];
+			
+			vertex1.uvw[0] = vertexvector[index].uvw[0];
+			vertex1.uvw[1] = vertexvector[index].uvw[1];
+			vertex1.uvw[2] = vertexvector[index].uvw[2];
+		
+			index++;
+
+			vertex2.pos[0] = vertexvector[index].pos[0];
+			vertex2.pos[1] = vertexvector[index].pos[1];
+			vertex2.pos[2] = vertexvector[index].pos[2];
+				  
+			vertex2.nrm[0] = vertexvector[index].nrm[0];
+			vertex2.nrm[1] = vertexvector[index].nrm[1];
+			vertex2.nrm[2] = vertexvector[index].nrm[2];
+				  
+			vertex2.uvw[0] = vertexvector[index].uvw[0];
+			vertex2.uvw[1] = vertexvector[index].uvw[1];
+			vertex2.uvw[2] = vertexvector[index].uvw[2];
+
+			index++;
+
+			vertex3.pos[0] = vertexvector[index].pos[0];
+			vertex3.pos[1] = vertexvector[index].pos[1];
+			vertex3.pos[2] = vertexvector[index].pos[2];
+				  
+			vertex3.nrm[0] = vertexvector[index].nrm[0];
+			vertex3.nrm[1] = vertexvector[index].nrm[1];
+			vertex3.nrm[2] = vertexvector[index].nrm[2];
+				  
+			vertex3.uvw[0] = vertexvector[index].uvw[0];
+			vertex3.uvw[1] = vertexvector[index].uvw[1];
+			vertex3.uvw[2] = vertexvector[index].uvw[2];
+
+			index++;
+
+			// Calculate the tangent and binormal of that face
+			CalculateTangentBinormal(vertex1, vertex2, vertex3, &tangent, &binormal);
+
+			CalculateNormal(tangent, binormal, normal);
+
+			float length;
+
+
+			//normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
+			//normal.y = (tangent.z * binormal.x) - (tangent.x * binormal.z);
+			//normal.z = (tangent.x * binormal.y) - (tangent.y * binormal.x);
+
+			// work out the new length
+			//length = sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+
+
+			//normal.x = normal.x / length;
+			//normal.y = normal.y / length;
+			//normal.z = normal.z / length;
+
+			//	model_data[index - 1].nrm = normal;
+			vertexvector[index - 1].tan[0] = tangent.x;
+			vertexvector[index - 1].tan[1] = tangent.y;
+			vertexvector[index - 1].tan[2] = tangent.z;
+
+			vertexvector[index - 1].bin[0] = binormal.x;
+			vertexvector[index - 1].bin[1] = binormal.y;
+			vertexvector[index - 1].bin[2] = binormal.z;
+			//vertexvector[index - 1].bin = binormal;
+
+			//	model_data[index - 2].nrm = normal;
+			vertexvector[index - 2].tan[0] = tangent.x;
+			vertexvector[index - 2].tan[1] = tangent.y;
+			vertexvector[index - 2].tan[2] = tangent.z;
+
+			vertexvector[index - 2].bin[0] = binormal.x;
+			vertexvector[index - 2].bin[1] = binormal.y;
+			vertexvector[index - 2].bin[2] = binormal.z;
+
+			vertexvector[index - 3].tan[0] = tangent.x;
+			vertexvector[index - 3].tan[1] = tangent.y;
+			vertexvector[index - 3].tan[2] = tangent.z;
+			
+			vertexvector[index - 3].bin[0] = binormal.x;
+			vertexvector[index - 3].bin[1] = binormal.y;
+			vertexvector[index - 3].bin[2] = binormal.z;
+
+			//vertexvector[index - 2].tan = tangent;
+			//vertexvector[index - 2].bin = binormal;
+
+			//	model_data[index - 3].nrm = normal;
+			//vertexvector[index - 3].tan = tangent;
+			//vertexvector[index - 3].bin = binormal;
+
+
+		}
+
 
 		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
 		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
@@ -357,6 +472,87 @@ namespace RendererD3D
 		
 	}
 
+	void Renderer::CalculateTangentBinormal(VERTEX vertex1, VERTEX vertex2, VERTEX vertex3, XMFLOAT3* tangent, XMFLOAT3* binormal)
+	{
+
+		float vector1[3], vector2[3];
+		float tuVector[2], tvVector[2];
+		float den;
+		float length;
+
+
+		// Calculate the two vectors for this face.
+		vector1[0] = vertex2.pos - vertex1.pos;
+		vector2[0] = vertex3.pos - vertex1.pos;
+		//vector1[0] = vertex2.pos.x - vertex1.pos.x;
+		//vector1[1] = vertex2.pos.y - vertex1.pos.y;
+		//vector1[2] = vertex2.pos.z - vertex1.pos.z;
+
+		//vector2[0] = vertex3.pos.x - vertex1.pos.x;
+		//vector2[1] = vertex3.pos.y - vertex1.pos.y;
+		//vector2[2] = vertex3.pos.z - vertex1.pos.z;
+
+		// Calculate the tu and tv texture space vectors.
+		tuVector[0] = vertex2.uvw - vertex1.uvw;
+		//tuVector[0] = vertex2.uvw.x - vertex1.uvw.x;
+		//tvVector[0] = vertex2.uvw.y - vertex1.uvw.y;
+
+		tuVector[1] = vertex3.uvw - vertex1.uvw;
+		//tuVector[1] = vertex3.uvw.x - vertex1.uvw.x;
+		//tvVector[1] = vertex3.uvw.y - vertex1.uvw.y;
+
+		// Calculate the denominator of the tangent/binormal equation.
+		den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+		// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
+		tangent->x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+		tangent->y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+		tangent->z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+		binormal->x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+		binormal->y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+		binormal->z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+		// Calculate the length of this normal.
+		length = sqrt((tangent->x * tangent->x) + (tangent->y * tangent->y) + (tangent->z * tangent->z));
+
+		// Normalize the normal and then store it
+		tangent->x = tangent->x / length;
+		tangent->y = tangent->y / length;
+		tangent->z = tangent->z / length;
+
+		// Calculate the length of this normal.
+		length = sqrt((binormal->x * binormal->x) + (binormal->y * binormal->y) + (binormal->z * binormal->z));
+
+		// Normalize the normal and then store it
+		binormal->x = binormal->x / length;
+		binormal->y = binormal->y / length;
+		binormal->z = binormal->z / length;
+
+		return;
+	}
+
+	void Renderer::CalculateNormal(XMFLOAT3 tangent, XMFLOAT3 binormal, XMFLOAT3& normal)
+	{
+		float length;
+
+
+		// Calculate the cross product of the tangent and binormal which will give the normal vector.
+		normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
+		normal.y = (tangent.z * binormal.x) - (tangent.x * binormal.z);
+		normal.z = (tangent.x * binormal.y) - (tangent.y * binormal.x);
+
+		// Calculate the length of the normal.
+		length = sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+
+		// Normalize the normal.
+		normal.x = normal.x / length;
+		normal.y = normal.y / length;
+		normal.z = normal.z / length;
+
+		return;
+	}
+
 
 
 	void Renderer::Run(double deltaTime)
@@ -381,14 +577,27 @@ namespace RendererD3D
 		//RenderMesh mesh;
 		
 		//set.AddRenderNode(&node);
-		
+		//**********************************      Light      ***************************************\
+		// directional light
+	//	diectionalLight = XMVectorSet(XMVectorGetX(Dir_Light_pos) + shiftLight,
+	//		XMVectorGetY(Dir_Light_pos),
+	//		XMVectorGetZ(Dir_Light_pos),
+	//		0.0f);
+	//	UpdateConstantBuffer(diectionalLight, m_pCB_DirectLight);
+	//	deviceContext->VSSetConstantBuffers(3, 1, &m_pCB_DirectLight);
+		XMVECTOR diectionalLight = XMVectorSet(	XMVectorGetX(Dir_Light_pos),
+												XMVectorGetY(Dir_Light_pos),
+												XMVectorGetZ(Dir_Light_pos),
+												0.0f);
+		UpdateConstantBuffer(diectionalLight, m_pCB_DirectLight);
+		Renderer::theContextPtr->PSSetConstantBuffers(0, 1, &m_pCB_DirectLight);
 
 			//**********************************      Model      ***************************************\
 		   /// Pipeline																				   |
 			XMMATRIX model_view = XMMatrixInverse(nullptr, camera.view_matrix);
 			XMMATRIX tempMatrix =  XMMatrixIdentity();
 			//tempMatrix = tempMatrix * XMMatrixRotationX(-90.0f);
-			//tempMatrix = tempMatrix * XMMatrixRotationY(deltaTime);
+			tempMatrix = tempMatrix * XMMatrixRotationY(deltaTime);
 			///tempMatrix = tempMatrix * XMMatrixRotationAxis(camUp, 0.0f);
 			//tempMatrix = tempMatrix * XMMatrixTranslation(0.0f, -20.0f, 100.0f);
 			model_world = tempMatrix;
@@ -779,7 +988,7 @@ namespace RendererD3D
 
 		ReleaseCOM(m_CB_Camera);
 		ReleaseCOM(m_CB_Cube);
-
+		
 		ReleaseCOM(CCWcullMode);
 		ReleaseCOM(CWcullMode);
 		ReleaseCOM(CubesTexSamplerState);

@@ -4,16 +4,7 @@
 // IMPORTANT: Student Version inserts "HFILE" warning. This tool is not considered a true model loader.
 // 15 points will be deducted from your final programming exam if you use this tool instead of your own loader.
 #pragma once
-
-struct VERTEX
-{
-	float pos[3];
-	float uvw[3];
-	float nrm[3];
-	float bin[3];
-	float tan[3];
-
-};
+#include "../SharedDefines.h"
 
 // Raw Vertex Data follows: Positions, Texture Coordinates and Normals.
 #ifndef _Cube_data_
