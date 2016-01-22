@@ -57,21 +57,24 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CHRISMASSADVENTURES));
 
 	// Main message loop:
-	while (GetMessage(&msg, NULL, 0, 0))
+	ZeroMemory(&msg, sizeof(msg));
+	while (msg.message != WM_QUIT  /*GetMessage(&msg, NULL, 0, 0) */)
 	{
 		xTime.Signal();
 		deltatime += xTime.Delta();
 
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		if (PeekMessage(&msg, NULL, 0U,0U, PM_REMOVE))
+	//	if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg); 
 		}
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		// OUR Primary Loop
-		rendererInstance->DetectInput();
-		rendererInstance->Run(deltatime);
-		rendererInstance->Present();
+		
+			/////////////////////////////////////////////////////////////////////////////////////////////
+			// OUR Primary Loop
+			rendererInstance->DetectInput();
+			rendererInstance->Run(deltatime);
+			rendererInstance->Present();
 		
 		/////////////////////////////////////////////////////////////////////////////////////////////		 
 	}
@@ -140,8 +143,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // OUR Initialization code goes here
    rendererInstance->Initialize(hWnd, WINDOW_WIDTH, WINDOW_HEIGHT);
    rendererInstance->InitializeDirectInput(hInst, hWnd);
-   rendererInstance->LoadObjects(); // empty for now
-   rendererInstance->MakeCube();
+  // rendererInstance->LoadObjects(); // empty for now
+   //rendererInstance->MakeCube();
    /////////////////////////////////////////////////////////////////////////////////////////////
 
    ShowWindow(hWnd, nCmdShow);

@@ -98,7 +98,7 @@ namespace RendererD3D
 
 		static void CalculateTangentBinormal(VERTEX vertex1, VERTEX vertex2, VERTEX vertex3, XMFLOAT3* tangent, XMFLOAT3* binormal);
 		static void CalculateNormal(XMFLOAT3 tangent, XMFLOAT3 binormal, XMFLOAT3& normal);
-		static void LoadObjects();
+		
 		static void MakeCube();
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		static void SetResolution(UINT _width, UINT _height);

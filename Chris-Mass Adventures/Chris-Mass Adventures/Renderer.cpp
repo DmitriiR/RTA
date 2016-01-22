@@ -17,7 +17,7 @@ static IDirectInputDevice8 * DIMouse;
 
 DIMOUSESTATE mouseLastState;
 LPDIRECTINPUT8 DirectInput;
-#define MOSE_SPEED			0.007f
+#define MOSE_SPEED			0.007f // speed of looking around 
 float rot = 0.0f;
 float riseY = 0.0f;
 float rotx = 0.0f;
@@ -35,7 +35,7 @@ float moveBackForward = 0.0f;
 float camYaw = 0.0f;
 float camPitch = 0.0f;
 float cam_View_Angle = 90.0f;
-float movemet_speed = 0.225f; // camera movement speed
+float movemet_speed = 0.025f; // camera movement speed
 bool first_person = false;
 
 XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -47,6 +47,8 @@ XMVECTOR camPosition = XMVectorSet(0.0f, 0.0f, -4.0f, 0.0f); // initial camera p
 XMVECTOR camTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);;
 // the directional light's vector
 XMVECTOR Dir_Light_pos = XMVectorSet(0.0f, -0.25f, 1.0f, 0.0f);
+
+double timeTemp = 0.0f;
 
 using namespace DirectX;
 
@@ -88,6 +90,7 @@ namespace RendererD3D
 	ID3D11Buffer				* Renderer::VertexBufferModel = nullptr;
 	// dds textures
 	ID3D11ShaderResourceView	* CubesTexture = nullptr;
+	ID3D11ShaderResourceView	* CubesTextureNormal = nullptr;
 
 	ID3D11Buffer				* m_CB_Camera = nullptr;
 	ID3D11Buffer				* m_CB_Cube = nullptr;
@@ -104,7 +107,7 @@ namespace RendererD3D
 
 	void Renderer::Initialize(HWND hWnd, UINT resWidth, UINT resHeight)
 	{
-		Aspect = resWidth / resHeight;
+		Aspect = (float)resWidth / (float)resHeight;
 		//bool isFullscreen;
 		DXGI_MODE_DESC	bufferDesctoFill;
 		ZeroMemory(&bufferDesctoFill, sizeof(DXGI_MODE_DESC));
@@ -228,13 +231,13 @@ namespace RendererD3D
 		
 		// Clearing the depth stencil 
     	theContextPtr->ClearDepthStencilView(RendererD3D::Renderer::theDepthStencilViewPtr, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL,
-			1.0f, 0.0f);
+			1.0f, 0);
 
 		D3D11_RASTERIZER_DESC cmdesc;
 		ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
 		cmdesc.FillMode = D3D11_FILL_SOLID;
 		cmdesc.CullMode = D3D11_CULL_BACK;
-		cmdesc.DepthBias = 0.0f;
+		cmdesc.DepthBias = 0;
 		cmdesc.DepthClipEnable = true;
 		cmdesc.MultisampleEnable = true;
 		cmdesc.FrontCounterClockwise = true;
@@ -288,21 +291,23 @@ namespace RendererD3D
 		XMVECTOR focusPos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 		XMVECTOR worldUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 		camera.view_matrix       = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
-		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), resWidth / resHeight, 0.1f, 500.0f);
+		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500.0f);
 		
 		CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
 		//CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 		// creates the constant buffer for the directional light
-		Dir_Light_pos = XMVectorSet(0.0f, -0.25f, 1.0f, 0.0f);
+		Dir_Light_pos = XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f);
 		CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
-		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
+	//	hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
+	//	hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCubeNormal.dds", NULL, &CubesTextureNormal);
+		
 		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
 		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
-		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
+		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
 		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Cat\\Catwoman\\Catwoman_Spec.dds", NULL, &CubesTexture);
 
 		//Chris - Mass Adventures\Assets\Teddy\
@@ -313,13 +318,13 @@ namespace RendererD3D
 
 		//MakeCube();
 		// getting the fbx cube!
-		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
+		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
 		// hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
 	//	hr = fbxstuff.LoadFBX(&vertexvector,   "Assets\\WoodBox\\Box");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Deposit_Box\\Deposit_Box");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman");
-		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
 		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
 
 
@@ -379,7 +384,7 @@ namespace RendererD3D
 
 			CalculateNormal(tangent, binormal, normal);
 
-			float length;
+			///float length;
 
 
 			//normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
@@ -446,7 +451,7 @@ namespace RendererD3D
 		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
 		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
 
-		//this->vertexvector;
+		
 		vertexBufferData_cube.pSysMem = &vertexvector[0];
 		vertexBufferData_cube.SysMemPitch = 0;
 		vertexBufferData_cube.SysMemSlicePitch = 0;
@@ -455,19 +460,19 @@ namespace RendererD3D
 		
 		modelBuffers.push_back(VertexBufferModel);
 
-		RenderShape shape;
-		XMFLOAT4X4 objectMatrix;
-		XMStoreFloat4x4(&objectMatrix, model_world);
-    	
-		shape.Initialize(&objectMatrix);
-	
-		RenderMesh mesh;
-		mesh.SetVertexBuffer(VertexBufferModel);
-		shape.SetMesh(&mesh);
-		
-		RenderNode node;
-		
-		renderSet.AddRenderNode(&node);
+		//RenderShape shape;
+		//XMFLOAT4X4 objectMatrix;
+		//XMStoreFloat4x4(&objectMatrix, model_world);
+    	//
+		//shape.Initialize(&objectMatrix);
+		//
+		//RenderMesh mesh;
+		//mesh.SetVertexBuffer(VertexBufferModel);
+		//shape.SetMesh(&mesh);
+		//
+		//RenderNode node;
+		//
+		//renderSet.AddRenderNode(&node);
 		
 		
 	}
@@ -475,8 +480,10 @@ namespace RendererD3D
 	void Renderer::CalculateTangentBinormal(VERTEX vertex1, VERTEX vertex2, VERTEX vertex3, XMFLOAT3* tangent, XMFLOAT3* binormal)
 	{
 
-		float vector1[3], vector2[3];
-		float tuVector[2], tvVector[2];
+		float vector1[3];
+			float vector2[3];
+			float tuVector[2];
+			float tvVector[2];
 		float den;
 		float length;
 
@@ -597,7 +604,9 @@ namespace RendererD3D
 			XMMATRIX model_view = XMMatrixInverse(nullptr, camera.view_matrix);
 			XMMATRIX tempMatrix =  XMMatrixIdentity();
 			//tempMatrix = tempMatrix * XMMatrixRotationX(-90.0f);
-			tempMatrix = tempMatrix * XMMatrixRotationY(deltaTime);
+			timeTemp += 0.01;
+			tempMatrix = tempMatrix * XMMatrixRotationY((float)deltaTime);
+			
 			///tempMatrix = tempMatrix * XMMatrixRotationAxis(camUp, 0.0f);
 			//tempMatrix = tempMatrix * XMMatrixTranslation(0.0f, -20.0f, 100.0f);
 			model_world = tempMatrix;
@@ -608,7 +617,7 @@ namespace RendererD3D
 
 			////ID3D11Buffer* pNullBuffer = nullptr;
 			//Renderer::theContextPtr->IASetIndexBuffer(IndexBufferCube, DXGI_FORMAT_R32_UINT, 0);				// model index buffer
-			Renderer::theContextPtr->IASetVertexBuffers(0, 1, &modelBuffers[0], &stride, &offset);				// <<Vertex buffer from geometry goes here 
+			Renderer::theContextPtr->IASetVertexBuffers(0, 1, &VertexBufferModel, &stride, &offset);				// <<Vertex buffer from geometry goes here 
 			Renderer::theContextPtr->IASetInputLayout(pInputLayout);
 			Renderer::theContextPtr->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			///// Vertex Shader
@@ -618,10 +627,6 @@ namespace RendererD3D
 			Renderer::theContextPtr->VSSetConstantBuffers(0, 1, &m_CB_Model);
 			Renderer::theContextPtr->VSSetConstantBuffers(1, 1, &m_CB_Camera);
 
-			// directional light
-			XMVECTOR directionalLight = XMVectorSet(XMVectorGetX(Dir_Light_pos), XMVectorGetY(Dir_Light_pos), XMVectorGetZ(Dir_Light_pos),0.0f);
-			UpdateConstantBuffer(directionalLight, m_pCB_DirectLight);
-			Renderer::theContextPtr->VSSetConstantBuffers(3, 1, &m_pCB_DirectLight);
 			///// Hull Shader 	/// Tesselator	/// Domain Shader	/// Geometry Shader
 			///// Rasterizer
 			Renderer::theContextPtr->RSSetState(CWcullMode);
@@ -629,9 +634,10 @@ namespace RendererD3D
 			Renderer::theContextPtr->PSSetShader(PS_Default, nullptr, 0);
 			Renderer::theContextPtr->PSSetSamplers(0, 1, &CubesTexSamplerState);
 			Renderer::theContextPtr->PSSetShaderResources(0, 1, &CubesTexture);									// << Texture / shader resouce view	
+			Renderer::theContextPtr->PSSetShaderResources(1, 1, &CubesTextureNormal); 
 			///// Output Merger, DRAW
 			D3D11_BUFFER_DESC desc = { 0 };
-			modelBuffers[0]->GetDesc(&desc);
+			VertexBufferModel->GetDesc(&desc);
 			UINT uiNumElements = desc.ByteWidth / sizeof(VERTEX);
 			Renderer::theContextPtr->Draw(uiNumElements, 0);													/// Draw without index
 		//  \ ___________________________________________________________________________________________/
@@ -687,108 +693,6 @@ namespace RendererD3D
 		UINT uiNumElements = desc.ByteWidth / DataSize;
 		return uiNumElements;
 	}
-
-
-	void Renderer::LoadObjects()
-	{
-
-	}
-
-	void Renderer::MakeCube( )
-	{
-		D3D11_BUFFER_DESC indexBufferData_cube		= { 0 };
-		indexBufferData_cube.Usage					= D3D11_USAGE_IMMUTABLE;
-		indexBufferData_cube.BindFlags				= D3D11_BIND_INDEX_BUFFER;
-		indexBufferData_cube.ByteWidth				= sizeof(Cube_indicies);
-		indexBufferData_cube.MiscFlags				= 0;
-		indexBufferData_cube.CPUAccessFlags			= 0;
-		indexBufferData_cube.StructureByteStride	= 0;
-
-		D3D11_SUBRESOURCE_DATA indexBufferDataSR_cube	= { 0 };
-		indexBufferDataSR_cube.pSysMem					= Cube_indicies;
-		indexBufferDataSR_cube.SysMemPitch				= 0;
-		indexBufferDataSR_cube.SysMemSlicePitch			= 0;
-
-		HRESULT hr = Renderer::theDevicePtr->CreateBuffer(&indexBufferData_cube, &indexBufferDataSR_cube, &IndexBufferCube);
-
-
-		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
-		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
-
-		verteciesBufferDesc_cube.Usage = D3D11_USAGE_IMMUTABLE;
-		verteciesBufferDesc_cube.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		verteciesBufferDesc_cube.ByteWidth = sizeof(Cube_data);
-		verteciesBufferDesc_cube.MiscFlags = 0;
-		verteciesBufferDesc_cube.CPUAccessFlags = 0;
-		verteciesBufferDesc_cube.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
-		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
-
-		vertexBufferData_cube.pSysMem = Cube_data;
-		vertexBufferData_cube.SysMemPitch = 0;
-		vertexBufferData_cube.SysMemSlicePitch = 0;
-
-		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertBufferCube);
-
-		
-		//RendererD3D::Renderer::cube
-
-
-		//RenderNode node;
-		
-		//RenderContext context;
-		//context.AddRenderNode(&node);
-		
-		
-		//shape.AddToContextSet(&context);
-
-		//RenderMesh mesh;
-		/// Initializes the indexed mesh based on data passed in.
-		/// Vertices that contain a position and texture coordinate.
-		/// \param verts - The vertices to copy to the vertex buffer.
-		/// \param numVerts - The number of vertices to copy to the vertex buffer.
-		/// \param indices - The indices to copy to the index buffer.
-		/// \param numIndices - The number of indices to copy to the index buffer.
-		/// \param primitiveType - The type of primitive represented by the vertices.
-	//	mesh.CreateIndexedMesh(Cube_data, sizeof(Cube_data) / sizeof(VERTEX), Cube_indicies, sizeof(Cube_indicies) / sizeof(unsigned int), D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	}
-
-	bool Renderer::InitializeDirectInput(HINSTANCE hInstance, HWND hWnd)
-	{
-
-		HRESULT hr = DirectInput8Create(hInstance,
-			DIRECTINPUT_VERSION,
-			IID_IDirectInput8,
-			(void**)&DirectInput,
-			NULL);
-
-		hr = DirectInput->CreateDevice(GUID_SysKeyboard,
-			&DIKeyboard,
-			NULL);
-
-		hr = DirectInput->CreateDevice(GUID_SysMouse,
-			&DIMouse,
-			NULL);
-
-		hr = DIKeyboard->SetDataFormat(&c_dfDIKeyboard);
-		hr = DIKeyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-
-		hr = DIMouse->SetDataFormat(&c_dfDIMouse);
-		// controls and sets the mouse pointer to locked 
-		// ---------------------------------------------
-		//hr = DIMouse->SetCooperativeLevel(window, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
-
-		// controls and sets the mouse pointer to lose 
-		// ---------------------------------------------
-		hr = DIMouse->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_NOWINKEY);
-		//
-		ShowCursor(true);
-		return true;
-
-	}
-
 
 	void Renderer::DetectInput()
 	{
@@ -901,7 +805,7 @@ namespace RendererD3D
 		//camera.view_matrix = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
 
 
-		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500000.0f);
+		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 5000.0f);
 
 		//camera.projection_matrix = PerspectiveProjectionMatrix(cam_View_Angle, 100.0f, 0.1f, Aspect);
 		//
@@ -935,33 +839,7 @@ namespace RendererD3D
 	
 	}
 	
-	XMMATRIX Renderer::PerspectiveProjectionMatrix(float FOV, float zFar, float zNear, float aspect)
-	{
-		XMMATRIX ProjectionMatrix;
-		XMFLOAT4X4 pr;
-		
-		//Yscale = cotangent(½ Vertical FOV)
-		float YScale = (sin(DegToRad(FOV * 0.5f)) / cos(DegToRad(FOV * 0.5f)));
-		float XScale = YScale * (aspect);
-
-		pr.m[0][0] = XScale;	pr.m[0][1] = 0.0f;		pr.m[0][2] = 0.0f;								pr.m[0][3] = 0.0f;
-		pr.m[1][0] = 0.0f;		pr.m[1][1] = YScale;	pr.m[1][2] = 0.0f;								pr.m[1][3] = 0.0f;
-		pr.m[2][0] = 0.0f;		pr.m[2][1] = 0.0f;		pr.m[2][2] = zFar / (zFar - zNear);				pr.m[2][3] = 0.0f;
-		pr.m[3][0] = 0.0f;		pr.m[3][1] = 0.0f;		pr.m[3][2] = -(zFar * zNear) / (zFar - zNear);	pr.m[3][3] = 0.0f;
-
-		//ProjectionMatrix.r[0] = { XScale, 0.0f, 0.0f, 0.0f };
-		//ProjectionMatrix.r[1] = { 0.0f, YScale, 0.0f, 0.0f };
-		//ProjectionMatrix.r[2] = { 0.0f, 0.0f, zFar / (zFar - zNear), 1.0f };
-		//ProjectionMatrix.r[3] = { 0.0f, 0.0f, -(zFar * zNear) / (zFar - zNear), 0.0f };
-
-		ProjectionMatrix = XMLoadFloat4x4(&pr);
-
-		return ProjectionMatrix;
-	}
-	float Renderer::DegToRad(float deg)
-	{
-		return (deg * (3.14f / 180.0f));
-	}
+	
 
 	void Renderer::Shutdown()
 	{
@@ -988,7 +866,8 @@ namespace RendererD3D
 
 		ReleaseCOM(m_CB_Camera);
 		ReleaseCOM(m_CB_Cube);
-		
+		ReleaseCOM(CubesTextureNormal);
+
 		ReleaseCOM(CCWcullMode);
 		ReleaseCOM(CWcullMode);
 		ReleaseCOM(CubesTexSamplerState);
@@ -1011,6 +890,110 @@ namespace RendererD3D
 		ReleaseCOM(DIKeyboard);
 		ReleaseCOM(DIMouse);
 		//ReleaseCOM(DirectInput);
+
+	}
+
+	bool Renderer::InitializeDirectInput(HINSTANCE hInstance, HWND hWnd)
+	{
+
+		HRESULT hr = DirectInput8Create(hInstance,
+			DIRECTINPUT_VERSION,
+			IID_IDirectInput8,
+			(void**)&DirectInput,
+			NULL);
+
+		hr = DirectInput->CreateDevice(GUID_SysKeyboard,
+			&DIKeyboard,
+			NULL);
+
+		hr = DirectInput->CreateDevice(GUID_SysMouse,
+			&DIMouse,
+			NULL);
+
+		hr = DIKeyboard->SetDataFormat(&c_dfDIKeyboard);
+		hr = DIKeyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+
+		hr = DIMouse->SetDataFormat(&c_dfDIMouse);
+		// controls and sets the mouse pointer to locked 
+		// ---------------------------------------------
+		//hr = DIMouse->SetCooperativeLevel(window, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
+
+		// controls and sets the mouse pointer to lose 
+		// ---------------------------------------------
+		hr = DIMouse->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_NOWINKEY);
+		//
+		ShowCursor(true);
+		return true;
+
+	}
+
+	XMMATRIX Renderer::PerspectiveProjectionMatrix(float FOV, float zFar, float zNear, float aspect)
+	{
+		XMMATRIX ProjectionMatrix;
+		XMFLOAT4X4 pr;
+
+		//Yscale = cotangent(½ Vertical FOV)
+		float YScale = (sin(DegToRad(FOV * 0.5f)) / cos(DegToRad(FOV * 0.5f)));
+		float XScale = YScale * (aspect);
+
+		pr.m[0][0] = XScale;	pr.m[0][1] = 0.0f;		pr.m[0][2] = 0.0f;								pr.m[0][3] = 0.0f;
+		pr.m[1][0] = 0.0f;		pr.m[1][1] = YScale;	pr.m[1][2] = 0.0f;								pr.m[1][3] = 0.0f;
+		pr.m[2][0] = 0.0f;		pr.m[2][1] = 0.0f;		pr.m[2][2] = zFar / (zFar - zNear);				pr.m[2][3] = 0.0f;
+		pr.m[3][0] = 0.0f;		pr.m[3][1] = 0.0f;		pr.m[3][2] = -(zFar * zNear) / (zFar - zNear);	pr.m[3][3] = 0.0f;
+
+		//ProjectionMatrix.r[0] = { XScale, 0.0f, 0.0f, 0.0f };
+		//ProjectionMatrix.r[1] = { 0.0f, YScale, 0.0f, 0.0f };
+		//ProjectionMatrix.r[2] = { 0.0f, 0.0f, zFar / (zFar - zNear), 1.0f };
+		//ProjectionMatrix.r[3] = { 0.0f, 0.0f, -(zFar * zNear) / (zFar - zNear), 0.0f };
+
+		ProjectionMatrix = XMLoadFloat4x4(&pr);
+
+		return ProjectionMatrix;
+	}
+	float Renderer::DegToRad(float deg)
+	{
+		return (deg * (3.14f / 180.0f));
+	}
+
+	// for testing
+	void Renderer::MakeCube()
+	{
+		D3D11_BUFFER_DESC indexBufferData_cube = { 0 };
+		indexBufferData_cube.Usage = D3D11_USAGE_IMMUTABLE;
+		indexBufferData_cube.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		indexBufferData_cube.ByteWidth = sizeof(Cube_indicies);
+		indexBufferData_cube.MiscFlags = 0;
+		indexBufferData_cube.CPUAccessFlags = 0;
+		indexBufferData_cube.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA indexBufferDataSR_cube = { 0 };
+		indexBufferDataSR_cube.pSysMem = Cube_indicies;
+		indexBufferDataSR_cube.SysMemPitch = 0;
+		indexBufferDataSR_cube.SysMemSlicePitch = 0;
+
+		HRESULT hr = Renderer::theDevicePtr->CreateBuffer(&indexBufferData_cube, &indexBufferDataSR_cube, &IndexBufferCube);
+
+
+		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
+		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
+
+		verteciesBufferDesc_cube.Usage = D3D11_USAGE_IMMUTABLE;
+		verteciesBufferDesc_cube.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		verteciesBufferDesc_cube.ByteWidth = sizeof(Cube_data);
+		verteciesBufferDesc_cube.MiscFlags = 0;
+		verteciesBufferDesc_cube.CPUAccessFlags = 0;
+		verteciesBufferDesc_cube.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
+		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
+
+		vertexBufferData_cube.pSysMem = Cube_data;
+		vertexBufferData_cube.SysMemPitch = 0;
+		vertexBufferData_cube.SysMemSlicePitch = 0;
+
+		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertBufferCube);
+
+
 
 	}
 }
