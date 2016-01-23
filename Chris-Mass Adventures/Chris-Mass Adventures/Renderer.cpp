@@ -301,15 +301,52 @@ namespace RendererD3D
 		Dir_Light_pos = XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f);
 		CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 
-		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
-	//	hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
-	//	hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCubeNormal.dds", NULL, &CubesTextureNormal);
-		
-		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
-		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
-		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
-		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Cat\\Catwoman\\Catwoman_Spec.dds", NULL, &CubesTexture);
 
+#if 0
+		// ball 
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball\\maps\\NBA BASKETBALL DIFFUSE.dds", NULL, &CubesTexture);
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball\\maps\\NBA BASKETBALL BUMP.dds", NULL, &CubesTextureNormal);
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Ball\\NBA_BASKETBALL");
+#endif
+
+#if 1
+		// ball2 
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_diffuse_no_ao.dds", NULL, &CubesTexture);
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_dNORMAL.dds", NULL, &CubesTextureNormal);
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Ball2\\Basketball\\basketball");
+#endif
+
+
+
+#if 0
+		// catwoman
+		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Cat\\Catwoman\\Catwoman_Spec.dds", NULL, &CubesTexture);
+		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Cat\\Catwoman\\Catwoman_NormHQA.dds", NULL, &CubesTextureNormal);
+		 hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman");
+#endif	
+
+#if 0
+		// Cube
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCubeNormal.dds", NULL, &CubesTextureNormal);
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); 
+#endif		
+
+#if 0
+		// teddy 
+		 hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Teddy\\Teddy_D.dds", NULL, &CubesTexture);
+		 hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
+#endif
+
+#if 0
+		 girl 
+		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Girl\\T_CH_FNPCbot01_cm.dds", NULL, &CubesTexture);
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
+
+
+#endif
+		 //hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
+		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
 		//Chris - Mass Adventures\Assets\Teddy\
 		//Teddy_Attack1.fbx
 
@@ -318,14 +355,10 @@ namespace RendererD3D
 
 		//MakeCube();
 		// getting the fbx cube!
-		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); // "F:\\Program Files (x86)\\RTA\\FBX\\Box_Jump.fbx");
-		// hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Girl\\Girl");
 	//	hr = fbxstuff.LoadFBX(&vertexvector,   "Assets\\WoodBox\\Box");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Deposit_Box\\Deposit_Box");
 		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx");
-		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman");
-		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Teddy\\Teddy_Attack1");
-		//hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
+	// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
 
 
 		int faceCount;
@@ -605,10 +638,10 @@ namespace RendererD3D
 			XMMATRIX tempMatrix =  XMMatrixIdentity();
 			//tempMatrix = tempMatrix * XMMatrixRotationX(-90.0f);
 			timeTemp += 0.01;
-			tempMatrix = tempMatrix * XMMatrixRotationY((float)deltaTime);
+			tempMatrix = tempMatrix * XMMatrixRotationY((float)deltaTime * 0.1f);
 			
 			///tempMatrix = tempMatrix * XMMatrixRotationAxis(camUp, 0.0f);
-			//tempMatrix = tempMatrix * XMMatrixTranslation(0.0f, -20.0f, 100.0f);
+			tempMatrix = tempMatrix * XMMatrixTranslation(0.0f, 0.0f, 50.0f);
 			model_world = tempMatrix;
 
 			///// Input Input-Assembler 

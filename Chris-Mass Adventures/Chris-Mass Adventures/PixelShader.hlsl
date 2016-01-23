@@ -26,7 +26,7 @@ float4 CalcDirLight(float3 surNormals, float4 surColor, float3 pos, float3 dir_l
 {
 	    float3 light_dir = dir_lgt_pos - pos;
 		//float4 light_ambient = float4(0.1f, 0.1f, 0.0f, 1.0f);
-		float4 light_diffuse = float4(1.0f, 1.0f, 0.3f, 1.0f);
+		float4 light_diffuse = float4(0.3f, 0.3f, 0.3f, 1.0f);
 
 		float lightIntensity = saturate(dot(-light_dir, surNormals));
 		float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -39,7 +39,7 @@ float4 CalcPointLight(float3 toLight, float3 surNormals, float4 surColor, float4
 	float4 returnColor;
 
 	float min_dist = 1.0f;
-	float max_dist = 10.0f;
+	float max_dist = 30.0f;
 	float distance = length(toLight);
 	float strength = 1 - saturate((distance - min_dist) / (max_dist - min_dist));
 
@@ -55,23 +55,22 @@ float4 main( P_IN input ) : SV_TARGET
 	baseColorNormalMap.xyz = (baseColorNormalMap * 2) - 1.0f;
 
 	float4 finalColor = baseColor;
-		float3 toLight = Dir_Light_Position - input.wPos.xyz;
-		float3 norm = normalize(input.nrm);
+	float3 toLight = Dir_Light_Position - input.wPos.xyz;
+	float3 norm = normalize(input.nrm);
 
-		// normal mapping
+	// normal mapping
 
 		//float3x3 TBN = { input.tan, input.bin, input.nrm };
-		//float3 nrm = mul(input.nrm, TBN);
-
-		baseColorNormalMap = mul(baseColorNormalMap, input.tbn);
+	float3 nrm = mul(input.nrm, input.tbn);
+	//baseColorNormalMap = mul(baseColorNormalMap, input.tbn);
 
 	float4 DirectionalLightColor = CalcDirLight(baseColorNormalMap, baseColor, input.wPos.xyz, Dir_Light_Position.xyz);
 	
-	float4 lightColor_point = float4(0.7f, 0.7f, 0.7f, 1.0f);
+	float4 lightColor_point = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	float4 PointLightColor = CalcPointLight(toLight, baseColorNormalMap, baseColor, lightColor_point);//, lightIntensity_Normals);
 
 
-	finalColor = saturate(DirectionalLightColor + PointLightColor);
+	finalColor = saturate( DirectionalLightColor + PointLightColor);
 
 	return finalColor;
 }
