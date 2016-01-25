@@ -156,6 +156,8 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 
 		}
 	}
+
+	// bitangent and binormal calculation
 	int faceCount;
 	int index = 0;
 	VERTEX vertex1, vertex2, vertex3;
@@ -253,6 +255,11 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 		outVertexVector[index - 3].bin[1] = binormal.y;
 		outVertexVector[index - 3].bin[2] = binormal.z;
 	}
+	// Animation Processing
+
+	// int numStacks = fbxScene->GetSrcObjectCount(FBX_TYPE(FbxAnimStack));// GetSrcObjectCount(FBX_TYPE(FbxAnimStack)); i++);
+
+
 
 	return BinaryOut(outVertexVector, (*fbxheader), _Filename);
 }

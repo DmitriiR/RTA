@@ -1,6 +1,8 @@
 #pragma once
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include <vector>
+
 typedef unsigned int		uint;
 typedef DirectX::XMFLOAT2	float2;
 typedef DirectX::XMFLOAT3	float3;

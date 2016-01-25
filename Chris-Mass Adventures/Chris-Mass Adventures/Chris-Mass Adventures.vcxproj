@@ -89,12 +89,15 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chris-Mass Adventures.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="FBXStuff.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Interpolator.h" />
     <ClInclude Include="JunkCode.h" />
+    <ClInclude Include="KeyFrame.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderMaterial.h" />
@@ -112,6 +115,7 @@
     <ClInclude Include="XTime.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Chris-Mass Adventures.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="FBXStuff.cpp" />

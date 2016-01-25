@@ -6,6 +6,10 @@
 //#include <vector>
 #include "Assets\Cube.h"
 
+// extracting animation from file 
+// http://docs.autodesk.com/FBX/2014/ENU/FBX-SDK-Documentation/index.html?url=files/GUID-E5C89F5F-09D1-4C32-BA83-28F63D0B2A6C.htm,topicNumber=d30e11661
+
+
 using namespace DirectX;
 
 class FBXStuff
