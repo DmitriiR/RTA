@@ -1,9 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#include "SharedDefines.h"
 #include "RenderNode.h"
 #include <D3D11.h>
-#include "SharedDefines.h"
 #include "vld.h"
 #include <math.h>
 #include <vector>
@@ -20,7 +20,6 @@
 //#include "RenderShape.h"
 //#include "RenderContext.h"
 
-#define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
 
 
@@ -92,6 +91,11 @@ namespace RendererD3D
 		
 		template <typename Type>// takes the source data, and makes a buffer, Buffer type defines  vertes, index or constant buffer
 		static HRESULT CreateConstantBuffer(const Type& source, ID3D11Buffer ** buffer, UINT bindFlag_type);
+		template <typename Type>
+		// takes the source data, and makes a buffer, Buffer type defines  vertes, index or constant buffer
+		static HRESULT CreateConstantBuffer(const Type& source, ID3D11Buffer ** buffer, UINT bindFlag_type, std::vector<VERTEX> * _vertVecor);
+		
+
 		template <typename Type>// takes the source data, and makes a buffer
 		static bool UpdateConstantBuffer(const Type& source, ID3D11Buffer * buffer);
 		static UINT GetNumberOf_Indecies(ID3D11Buffer * buffer, unsigned int DataSize);

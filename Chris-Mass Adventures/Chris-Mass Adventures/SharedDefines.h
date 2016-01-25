@@ -72,3 +72,5 @@ struct VERTEX
 	float tan[3];
 
 };
+
+#define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }

@@ -5,8 +5,13 @@
 //template <typename VertexFormat>
 class RenderMesh
 {
-	ID3D11Buffer				* vertexBuffer;
- 
+	// buffer to hold the object 
+	ID3D11Buffer				* vertexBuffer = nullptr;
+	// buffer to hold the textures
+	ID3D11ShaderResourceView	* TextureDeffuse = nullptr;
+	ID3D11ShaderResourceView	* TextureNormal = nullptr;
+
+
 	/// The number of primitives defined in this mesh
 	UINT                        numPrimitives;
 	/// The type of primitive contained in this mesh such as D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
@@ -26,26 +31,36 @@ class RenderMesh
 public:
 	RenderMesh()
 	{
+		
 	}
 	~RenderMesh()
 	{
+		if (vertexBuffer) ReleaseCOM(vertexBuffer);
+		if (TextureDeffuse) ReleaseCOM(TextureDeffuse);
+		if (TextureNormal) ReleaseCOM(TextureNormal);
 	}
 
 	//template <typename VertexFormat>
 	//void CreateIndexedMesh(const VERTEX *verts, unsigned int numVerts,
 	//	const unsigned int *indices, unsigned int numIndices,
 	//	D3D_PRIMITIVE_TOPOLOGY primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	
+	// getters 
 	inline unsigned int GetPrimitiveCount() const { return numPrimitives; }
 	inline unsigned int GetStartIndex() const { return startIndex; }
 	inline unsigned int GetVertCount() const { return numVertices; }
 	inline unsigned int GetStartVertex() const { return startVertex; }
 	inline ID3D11Buffer* GetVertexBuffer() { return vertexBuffer; }
+	inline ID3D11ShaderResourceView* GetDeffuseTexture() { return TextureDeffuse; }
+	inline ID3D11ShaderResourceView* GetNormalTexture() { return TextureNormal; }
 
+	// setters 
 	inline void SetVertexBuffer(ID3D11Buffer* _buffer) { vertexBuffer = _buffer;}
+	inline void SetDeffuseTexture(ID3D11ShaderResourceView* _dTexture) { TextureDeffuse = _dTexture; }
+	inline void SetNormalTexture(ID3D11ShaderResourceView* _nTexture) { TextureNormal = _nTexture; }
 
 	// classs handles the main pbject loading 
-	inline RenderMesh *RenderMesh::Load(const char* pInFileName, const char* pVertexFormat)
+	inline RenderMesh* RenderMesh::Load(const char* pInFileName)
 	{
 		//std::string temp;// = ContentManager::theContentPath;
 		//temp += pInFileName;

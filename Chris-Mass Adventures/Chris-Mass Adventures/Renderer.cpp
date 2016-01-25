@@ -82,6 +82,7 @@ namespace RendererD3D
 	XMMATRIX cubeWorld;
 	XMMATRIX model_world;
 
+	std::vector<RenderMesh> renderMeshes;
 
 	// buffers 
 	//ID3D11Buffer				* Renderer::m_CB_Camera = nullptr ;
@@ -282,10 +283,6 @@ namespace RendererD3D
 		};
 		theDevicePtr->CreateInputLayout(vertexPosDesc, 5, VertexShader, sizeof(VertexShader), &pInputLayout);
 
-
-
-	
-
 		//// camera 
 		XMVECTOR eyePos = XMVectorSet(0.0f, 4.0f, -1.0f, 1.0f);
 		XMVECTOR focusPos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -301,7 +298,6 @@ namespace RendererD3D
 		Dir_Light_pos = XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f);
 		CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 
-
 #if 0
 		// ball 
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball\\maps\\NBA BASKETBALL DIFFUSE.dds", NULL, &CubesTexture);
@@ -313,7 +309,17 @@ namespace RendererD3D
 		// ball2 
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_diffuse_no_ao.dds", NULL, &CubesTexture);
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_dNORMAL.dds", NULL, &CubesTextureNormal);
-		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Ball2\\Basketball\\basketball");
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Ball2\\Basketball\\basketball",&VertexBufferModel);
+
+		CreateConstantBuffer(vertexvector, &VertexBufferModel, D3D11_BIND_VERTEX_BUFFER, &vertexvector);
+
+		modelBuffers.push_back(VertexBufferModel);
+
+	//	RenderMesh mesh;
+	//	mesh.SetDeffuseTexture(CubesTexture);
+	//	mesh.SetNormalTexture(CubesTextureNormal);
+	//	mesh.SetVertexBuffer(VertexBufferModel);
+	//	renderMeshes.push_back(mesh);
 #endif
 
 
@@ -345,178 +351,15 @@ namespace RendererD3D
 
 
 #endif
-		 //hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\metallock.dds", NULL, &CubesTexture);
-		// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Deposit_Box\\ndeposit-box_COLOR.dds", NULL, &CubesTexture);
-		//Chris - Mass Adventures\Assets\Teddy\
-		//Teddy_Attack1.fbx
-
-		// model code for testing
-		//std::vector<VERTEX> vertexvector;
-
-		//MakeCube();
-		// getting the fbx cube!
-	//	hr = fbxstuff.LoadFBX(&vertexvector,   "Assets\\WoodBox\\Box");
-		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Deposit_Box\\Deposit_Box");
-		//hr = fbxstuff.LoadFBX(vertexvector, "Assets\\\Audi\\Models\\Audi R8.fbx");
-	// hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\\Teddy\\Catwoman_Spec.dds", NULL, &CubesTexture);
-
-
-		int faceCount;
-		int index = 0;
-		VERTEX vertex1, vertex2, vertex3;
-		XMFLOAT3 tangent, binormal, normal;
-
-		faceCount = vertexvector.size() / 3;
-		for (int i = 0; i < faceCount; i++)
-		{
-			// Get the three vertices for this face from the model.
-			vertex1.pos[0] = vertexvector[index].pos[0];
-			vertex1.pos[1] = vertexvector[index].pos[1];
-			vertex1.pos[2] = vertexvector[index].pos[2];
-
-			vertex1.nrm[0] = vertexvector[index].nrm[0];
-			vertex1.nrm[1] = vertexvector[index].nrm[1];
-			vertex1.nrm[2] = vertexvector[index].nrm[2];
-			
-			vertex1.uvw[0] = vertexvector[index].uvw[0];
-			vertex1.uvw[1] = vertexvector[index].uvw[1];
-			vertex1.uvw[2] = vertexvector[index].uvw[2];
-		
-			index++;
-
-			vertex2.pos[0] = vertexvector[index].pos[0];
-			vertex2.pos[1] = vertexvector[index].pos[1];
-			vertex2.pos[2] = vertexvector[index].pos[2];
-				  
-			vertex2.nrm[0] = vertexvector[index].nrm[0];
-			vertex2.nrm[1] = vertexvector[index].nrm[1];
-			vertex2.nrm[2] = vertexvector[index].nrm[2];
-				  
-			vertex2.uvw[0] = vertexvector[index].uvw[0];
-			vertex2.uvw[1] = vertexvector[index].uvw[1];
-			vertex2.uvw[2] = vertexvector[index].uvw[2];
-
-			index++;
-
-			vertex3.pos[0] = vertexvector[index].pos[0];
-			vertex3.pos[1] = vertexvector[index].pos[1];
-			vertex3.pos[2] = vertexvector[index].pos[2];
-				  
-			vertex3.nrm[0] = vertexvector[index].nrm[0];
-			vertex3.nrm[1] = vertexvector[index].nrm[1];
-			vertex3.nrm[2] = vertexvector[index].nrm[2];
-				  
-			vertex3.uvw[0] = vertexvector[index].uvw[0];
-			vertex3.uvw[1] = vertexvector[index].uvw[1];
-			vertex3.uvw[2] = vertexvector[index].uvw[2];
-
-			index++;
-
-			// Calculate the tangent and binormal of that face
-			CalculateTangentBinormal(vertex1, vertex2, vertex3, &tangent, &binormal);
-
-			CalculateNormal(tangent, binormal, normal);
-
-			///float length;
-
-
-			//normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
-			//normal.y = (tangent.z * binormal.x) - (tangent.x * binormal.z);
-			//normal.z = (tangent.x * binormal.y) - (tangent.y * binormal.x);
-
-			// work out the new length
-			//length = sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
-
-
-			//normal.x = normal.x / length;
-			//normal.y = normal.y / length;
-			//normal.z = normal.z / length;
-
-			//	model_data[index - 1].nrm = normal;
-			vertexvector[index - 1].tan[0] = tangent.x;
-			vertexvector[index - 1].tan[1] = tangent.y;
-			vertexvector[index - 1].tan[2] = tangent.z;
-
-			vertexvector[index - 1].bin[0] = binormal.x;
-			vertexvector[index - 1].bin[1] = binormal.y;
-			vertexvector[index - 1].bin[2] = binormal.z;
-			//vertexvector[index - 1].bin = binormal;
-
-			//	model_data[index - 2].nrm = normal;
-			vertexvector[index - 2].tan[0] = tangent.x;
-			vertexvector[index - 2].tan[1] = tangent.y;
-			vertexvector[index - 2].tan[2] = tangent.z;
-
-			vertexvector[index - 2].bin[0] = binormal.x;
-			vertexvector[index - 2].bin[1] = binormal.y;
-			vertexvector[index - 2].bin[2] = binormal.z;
-
-			vertexvector[index - 3].tan[0] = tangent.x;
-			vertexvector[index - 3].tan[1] = tangent.y;
-			vertexvector[index - 3].tan[2] = tangent.z;
-			
-			vertexvector[index - 3].bin[0] = binormal.x;
-			vertexvector[index - 3].bin[1] = binormal.y;
-			vertexvector[index - 3].bin[2] = binormal.z;
-
-			//vertexvector[index - 2].tan = tangent;
-			//vertexvector[index - 2].bin = binormal;
-
-			//	model_data[index - 3].nrm = normal;
-			//vertexvector[index - 3].tan = tangent;
-			//vertexvector[index - 3].bin = binormal;
-
-
-		}
-
-
-		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
-		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
-
-		verteciesBufferDesc_cube.Usage = D3D11_USAGE_IMMUTABLE;
-		verteciesBufferDesc_cube.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		int size = sizeof(VERTEX) * vertexvector.size();
-		verteciesBufferDesc_cube.ByteWidth = sizeof(VERTEX) * vertexvector.size();
-		verteciesBufferDesc_cube.MiscFlags		= 0;
-		verteciesBufferDesc_cube.CPUAccessFlags = 0;
-		verteciesBufferDesc_cube.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
-		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
-
-		
-		vertexBufferData_cube.pSysMem = &vertexvector[0];
-		vertexBufferData_cube.SysMemPitch = 0;
-		vertexBufferData_cube.SysMemSlicePitch = 0;
-
-		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertexBufferModel);
-		
-		modelBuffers.push_back(VertexBufferModel);
-
-		//RenderShape shape;
-		//XMFLOAT4X4 objectMatrix;
-		//XMStoreFloat4x4(&objectMatrix, model_world);
-    	//
-		//shape.Initialize(&objectMatrix);
-		//
-		//RenderMesh mesh;
-		//mesh.SetVertexBuffer(VertexBufferModel);
-		//shape.SetMesh(&mesh);
-		//
-		//RenderNode node;
-		//
-		//renderSet.AddRenderNode(&node);
-		
-		
 	}
 
 	void Renderer::CalculateTangentBinormal(VERTEX vertex1, VERTEX vertex2, VERTEX vertex3, XMFLOAT3* tangent, XMFLOAT3* binormal)
 	{
 
 		float vector1[3];
-			float vector2[3];
-			float tuVector[2];
-			float tvVector[2];
+		float vector2[3];
+		float tuVector[2];
+		float tvVector[2];
 		float den;
 		float length;
 
@@ -677,6 +520,8 @@ namespace RendererD3D
 
 	}
 
+
+
 	template <typename Type>
 	// takes the source data, and makes a buffer, Buffer type defines  vertes, index or constant buffer
 	HRESULT Renderer::CreateConstantBuffer(const Type& source, ID3D11Buffer ** buffer, UINT bindFlag_type)
@@ -701,6 +546,35 @@ namespace RendererD3D
 		{
 			hr = RendererD3D::Renderer::theDevicePtr->CreateBuffer(&desc, &resource_data, buffer);
 		}
+		return hr;
+	}
+
+	template <typename Type>
+	// takes the source data, and makes a buffer, Buffer type defines  vertes, index or constant buffer
+	HRESULT Renderer::CreateConstantBuffer(const Type& source, ID3D11Buffer ** buffer, UINT bindFlag_type, std::vector<VERTEX> * _vertVecor )
+	{
+		
+		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
+		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
+
+		verteciesBufferDesc_cube.Usage = D3D11_USAGE_IMMUTABLE;
+		verteciesBufferDesc_cube.BindFlags = bindFlag_type;
+		int size = sizeof(VERTEX) * _vertVecor->size();
+		verteciesBufferDesc_cube.ByteWidth = sizeof(VERTEX) * _vertVecor->size();
+		verteciesBufferDesc_cube.MiscFlags = 0;
+		verteciesBufferDesc_cube.CPUAccessFlags = 0;
+		verteciesBufferDesc_cube.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
+		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
+
+
+		vertexBufferData_cube.pSysMem = &source[0];
+		vertexBufferData_cube.SysMemPitch = 0;
+		vertexBufferData_cube.SysMemSlicePitch = 0;
+
+		HRESULT hr;
+		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, buffer);
 		return hr;
 	}
 

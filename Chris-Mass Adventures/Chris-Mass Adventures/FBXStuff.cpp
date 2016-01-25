@@ -4,7 +4,11 @@
 #include <fstream>
 #include "FBXStuff.h"
 
-HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Filename)
+
+
+using namespace DirectX;
+
+HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Filename, ID3D11Buffer ** outbuffer)
 {
 
 
@@ -152,7 +156,188 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 
 		}
 	}
+	int faceCount;
+	int index = 0;
+	VERTEX vertex1, vertex2, vertex3;
+	XMFLOAT3 tangent, binormal, normal;
+
+	faceCount = outVertexVector.size() / 3;
+	for (int i = 0; i < faceCount; i++)
+	{
+		// Get the three vertices for this face from the model.
+		vertex1.pos[0] = outVertexVector[index].pos[0];
+		vertex1.pos[1] = outVertexVector[index].pos[1];
+		vertex1.pos[2] = outVertexVector[index].pos[2];
+
+		vertex1.nrm[0] = outVertexVector[index].nrm[0];
+		vertex1.nrm[1] = outVertexVector[index].nrm[1];
+		vertex1.nrm[2] = outVertexVector[index].nrm[2];
+
+		vertex1.uvw[0] = outVertexVector[index].uvw[0];
+		vertex1.uvw[1] = outVertexVector[index].uvw[1];
+		vertex1.uvw[2] = outVertexVector[index].uvw[2];
+
+		index++;
+
+		vertex2.pos[0] = outVertexVector[index].pos[0];
+		vertex2.pos[1] = outVertexVector[index].pos[1];
+		vertex2.pos[2] = outVertexVector[index].pos[2];
+
+		vertex2.nrm[0] = outVertexVector[index].nrm[0];
+		vertex2.nrm[1] = outVertexVector[index].nrm[1];
+		vertex2.nrm[2] = outVertexVector[index].nrm[2];
+
+		vertex2.uvw[0] = outVertexVector[index].uvw[0];
+		vertex2.uvw[1] = outVertexVector[index].uvw[1];
+		vertex2.uvw[2] = outVertexVector[index].uvw[2];
+
+		index++;
+
+		vertex3.pos[0] = outVertexVector[index].pos[0];
+		vertex3.pos[1] = outVertexVector[index].pos[1];
+		vertex3.pos[2] = outVertexVector[index].pos[2];
+
+		vertex3.nrm[0] = outVertexVector[index].nrm[0];
+		vertex3.nrm[1] = outVertexVector[index].nrm[1];
+		vertex3.nrm[2] = outVertexVector[index].nrm[2];
+
+		vertex3.uvw[0] = outVertexVector[index].uvw[0];
+		vertex3.uvw[1] = outVertexVector[index].uvw[1];
+		vertex3.uvw[2] = outVertexVector[index].uvw[2];
+
+		index++;
+
+		// Calculate the tangent and binormal of that face
+		CalculateTangentBinormal(vertex1, vertex2, vertex3, &tangent, &binormal);
+
+		CalculateNormal(tangent, binormal, normal);
+
+		///float length;
+
+		//normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
+		//normal.y = (tangent.z * binormal.x) - (tangent.x * binormal.z);
+		//normal.z = (tangent.x * binormal.y) - (tangent.y * binormal.x);
+
+		// work out the new length
+		//length = sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+
+
+		//normal.x = normal.x / length;
+		//normal.y = normal.y / length;
+		//normal.z = normal.z / length;
+
+		//	model_data[index - 1].nrm = normal;
+		outVertexVector[index - 1].tan[0] = tangent.x;
+		outVertexVector[index - 1].tan[1] = tangent.y;
+		outVertexVector[index - 1].tan[2] = tangent.z;
+
+		outVertexVector[index - 1].bin[0] = binormal.x;
+		outVertexVector[index - 1].bin[1] = binormal.y;
+		outVertexVector[index - 1].bin[2] = binormal.z;
+		//vertexvector[index - 1].bin = binormal;
+
+		//	model_data[index - 2].nrm = normal;
+		outVertexVector[index - 2].tan[0] = tangent.x;
+		outVertexVector[index - 2].tan[1] = tangent.y;
+		outVertexVector[index - 2].tan[2] = tangent.z;
+
+		outVertexVector[index - 2].bin[0] = binormal.x;
+		outVertexVector[index - 2].bin[1] = binormal.y;
+		outVertexVector[index - 2].bin[2] = binormal.z;
+
+		outVertexVector[index - 3].tan[0] = tangent.x;
+		outVertexVector[index - 3].tan[1] = tangent.y;
+		outVertexVector[index - 3].tan[2] = tangent.z;
+
+		outVertexVector[index - 3].bin[0] = binormal.x;
+		outVertexVector[index - 3].bin[1] = binormal.y;
+		outVertexVector[index - 3].bin[2] = binormal.z;
+	}
+
 	return BinaryOut(outVertexVector, (*fbxheader), _Filename);
+}
+
+void FBXStuff::CalculateTangentBinormal(VERTEX vertex1, VERTEX vertex2, VERTEX vertex3, XMFLOAT3* tangent, XMFLOAT3* binormal)
+{
+
+	float vector1[3];
+	float vector2[3];
+	float tuVector[2];
+	float tvVector[2];
+	float den;
+	float length;
+
+
+	// Calculate the two vectors for this face.
+	vector1[0] = vertex2.pos - vertex1.pos;
+	vector2[0] = vertex3.pos - vertex1.pos;
+	//vector1[0] = vertex2.pos.x - vertex1.pos.x;
+	//vector1[1] = vertex2.pos.y - vertex1.pos.y;
+	//vector1[2] = vertex2.pos.z - vertex1.pos.z;
+
+	//vector2[0] = vertex3.pos.x - vertex1.pos.x;
+	//vector2[1] = vertex3.pos.y - vertex1.pos.y;
+	//vector2[2] = vertex3.pos.z - vertex1.pos.z;
+
+	// Calculate the tu and tv texture space vectors.
+	tuVector[0] = vertex2.uvw - vertex1.uvw;
+	//tuVector[0] = vertex2.uvw.x - vertex1.uvw.x;
+	//tvVector[0] = vertex2.uvw.y - vertex1.uvw.y;
+
+	tuVector[1] = vertex3.uvw - vertex1.uvw;
+	//tuVector[1] = vertex3.uvw.x - vertex1.uvw.x;
+	//tvVector[1] = vertex3.uvw.y - vertex1.uvw.y;
+
+	// Calculate the denominator of the tangent/binormal equation.
+	den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+	// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
+	tangent->x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+	tangent->y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+	tangent->z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+	binormal->x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+	binormal->y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+	binormal->z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+	// Calculate the length of this normal.
+	length = sqrt((tangent->x * tangent->x) + (tangent->y * tangent->y) + (tangent->z * tangent->z));
+
+	// Normalize the normal and then store it
+	tangent->x = tangent->x / length;
+	tangent->y = tangent->y / length;
+	tangent->z = tangent->z / length;
+
+	// Calculate the length of this normal.
+	length = sqrt((binormal->x * binormal->x) + (binormal->y * binormal->y) + (binormal->z * binormal->z));
+
+	// Normalize the normal and then store it
+	binormal->x = binormal->x / length;
+	binormal->y = binormal->y / length;
+	binormal->z = binormal->z / length;
+
+	return;
+}
+
+void FBXStuff::CalculateNormal(XMFLOAT3 tangent, XMFLOAT3 binormal, XMFLOAT3& normal)
+{
+	float length;
+
+
+	// Calculate the cross product of the tangent and binormal which will give the normal vector.
+	normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
+	normal.y = (tangent.z * binormal.x) - (tangent.x * binormal.z);
+	normal.z = (tangent.x * binormal.y) - (tangent.y * binormal.x);
+
+	// Calculate the length of the normal.
+	length = sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
+
+	// Normalize the normal.
+	normal.x = normal.x / length;
+	normal.y = normal.y / length;
+	normal.z = normal.z / length;
+
+	return;
 }
 
 HRESULT FBXStuff::BinaryOut(std::vector<VERTEX>&inVertexVector, FbxIOFileHeaderInfo& fileheader, const char* _Filename)
