@@ -6,8 +6,9 @@
 
 #include "RenderShape.h"
 //#include "RenderContext.h"
-#include "Assets\Cube.h"
+//#include "Assets\Cube.h"
 #include "FBXStuff.h"
+
 
 
 
@@ -83,6 +84,7 @@ namespace RendererD3D
 	XMMATRIX model_world;
 
 	std::vector<RenderMesh> renderMeshes;
+	Animation* Renderer::animation = nullptr; // object animation 
 
 	// buffers 
 	//ID3D11Buffer				* Renderer::m_CB_Camera = nullptr ;
@@ -279,9 +281,11 @@ namespace RendererD3D
 			{ "UVM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NRM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TAN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "BIN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+			{ "BIN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BID", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BWT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
-		theDevicePtr->CreateInputLayout(vertexPosDesc, 5, VertexShader, sizeof(VertexShader), &pInputLayout);
+		theDevicePtr->CreateInputLayout(vertexPosDesc, 7, VertexShader, sizeof(VertexShader), &pInputLayout);
 
 		//// camera 
 		XMVECTOR eyePos = XMVectorSet(0.0f, 4.0f, -1.0f, 1.0f);
@@ -310,11 +314,10 @@ namespace RendererD3D
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_diffuse_no_ao.dds", NULL, &CubesTexture);
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_dNORMAL.dds", NULL, &CubesTextureNormal);
 		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Ball2\\Basketball\\basketball",&VertexBufferModel);
-
 		CreateConstantBuffer(vertexvector, &VertexBufferModel, D3D11_BIND_VERTEX_BUFFER, &vertexvector);
-
 		modelBuffers.push_back(VertexBufferModel);
 
+		animation = animation->Initialize();
 	//	RenderMesh mesh;
 	//	mesh.SetDeffuseTexture(CubesTexture);
 	//	mesh.SetNormalTexture(CubesTextureNormal);
@@ -714,6 +717,8 @@ namespace RendererD3D
 
 		ReleaseCOM(DIKeyboard);
 		ReleaseCOM(DIMouse);
+
+		delete animation;
 		//ReleaseCOM(DirectInput);
 
 	}
@@ -780,45 +785,5 @@ namespace RendererD3D
 		return (deg * (3.14f / 180.0f));
 	}
 
-	// for testing
-	void Renderer::MakeCube()
-	{
-		D3D11_BUFFER_DESC indexBufferData_cube = { 0 };
-		indexBufferData_cube.Usage = D3D11_USAGE_IMMUTABLE;
-		indexBufferData_cube.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		indexBufferData_cube.ByteWidth = sizeof(Cube_indicies);
-		indexBufferData_cube.MiscFlags = 0;
-		indexBufferData_cube.CPUAccessFlags = 0;
-		indexBufferData_cube.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA indexBufferDataSR_cube = { 0 };
-		indexBufferDataSR_cube.pSysMem = Cube_indicies;
-		indexBufferDataSR_cube.SysMemPitch = 0;
-		indexBufferDataSR_cube.SysMemSlicePitch = 0;
-
-		HRESULT hr = Renderer::theDevicePtr->CreateBuffer(&indexBufferData_cube, &indexBufferDataSR_cube, &IndexBufferCube);
-
-
-		D3D11_BUFFER_DESC verteciesBufferDesc_cube;
-		ZeroMemory(&verteciesBufferDesc_cube, sizeof(verteciesBufferDesc_cube));
-
-		verteciesBufferDesc_cube.Usage = D3D11_USAGE_IMMUTABLE;
-		verteciesBufferDesc_cube.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		verteciesBufferDesc_cube.ByteWidth = sizeof(Cube_data);
-		verteciesBufferDesc_cube.MiscFlags = 0;
-		verteciesBufferDesc_cube.CPUAccessFlags = 0;
-		verteciesBufferDesc_cube.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData_cube;
-		ZeroMemory(&vertexBufferData_cube, sizeof(vertexBufferData_cube));
-
-		vertexBufferData_cube.pSysMem = Cube_data;
-		vertexBufferData_cube.SysMemPitch = 0;
-		vertexBufferData_cube.SysMemSlicePitch = 0;
-
-		hr = Renderer::theDevicePtr->CreateBuffer(&verteciesBufferDesc_cube, &vertexBufferData_cube, &VertBufferCube);
-
-
-
-	}
+	
 }

@@ -3,6 +3,10 @@
 #include <DirectXMath.h>
 #include <vector>
 
+#include "float3.h"
+#include "float4x4.h"
+
+
 typedef unsigned int		uint;
 typedef DirectX::XMFLOAT2	float2;
 typedef DirectX::XMFLOAT3	float3;
@@ -72,7 +76,18 @@ struct VERTEX
 	float nrm[3];
 	float bin[3];
 	float tan[3];
-
+	DirectX::XMINT4   bone;
+	DirectX::XMFLOAT4 weights;
+	VERTEX(void)
+	{
+		pos[0] = 0.0f; pos[1] = 0.0f; pos[2] = 0.0f;
+		uvw[0] = 0.0f; uvw[1] = 0.0f; uvw[2] = 0.0f;
+		nrm[0] = 0.0f; nrm[1] = 0.0f; nrm[2] = 0.0f;
+		bin[0] = 0.0f; bin[1] = 0.0f; bin[2] = 0.0f;
+		tan[0] = 0.0f; tan[1] = 0.0f; tan[2] = 0.0f;
+		bone.x = 0;	bone.y = 0;	bone.z = 0; bone.w = 0;
+		weights.x = 0.0f;	weights.y = 0.0f;	weights.z = 0.0f; weights.w = 0.0f;
+	}
 };
 
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }

@@ -2,7 +2,7 @@
 //
 #include "stdafx.h"
 #include "Chris-Mass Adventures.h"
-#include "Assets\Cube.h"
+//#include "Assets\Cube.h"
 #define MAX_LOADSTRING 100
 
 // Global Variables:

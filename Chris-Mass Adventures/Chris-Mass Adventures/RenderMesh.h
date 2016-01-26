@@ -1,6 +1,6 @@
 #pragma once
 #include <math.h>
-
+#include "AnimatedBone.h"
 
 //template <typename VertexFormat>
 class RenderMesh
@@ -11,6 +11,13 @@ class RenderMesh
 	ID3D11ShaderResourceView	* TextureDeffuse = nullptr;
 	ID3D11ShaderResourceView	* TextureNormal = nullptr;
 
+	std::vector<AnimatedBone> bones;
+	const static int NUM_BONES = 50;
+	//float4x4	gSkinnedWorld;
+
+	float4x4	gSkinnedViewProj;
+
+	float4x4	gSkinnedMatrices[NUM_BONES];
 
 	/// The number of primitives defined in this mesh
 	UINT                        numPrimitives;
@@ -54,6 +61,7 @@ public:
 	inline ID3D11ShaderResourceView* GetDeffuseTexture() { return TextureDeffuse; }
 	inline ID3D11ShaderResourceView* GetNormalTexture() { return TextureNormal; }
 
+	inline void AddBone(AnimatedBone * bone) { bones.push_back( *bone); }
 	// setters 
 	inline void SetVertexBuffer(ID3D11Buffer* _buffer) { vertexBuffer = _buffer;}
 	inline void SetDeffuseTexture(ID3D11ShaderResourceView* _dTexture) { TextureDeffuse = _dTexture; }

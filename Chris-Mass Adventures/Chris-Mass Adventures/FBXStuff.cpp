@@ -28,11 +28,12 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 	fbxScene = FbxScene::Create(fbxManager, ""); // create the scene
 
 	fbxheader = fbxImporter->GetFileHeaderInfo();
-
-	if (BinaryIn(outVertexVector, (*fbxheader), _Filename) == S_OK)
-	{
-		return S_OK;
-	}
+	
+	// is the fine exixts=
+//	if (BinaryIn(outVertexVector, (*fbxheader), _Filename) == S_OK)
+//	{
+//		return S_OK;
+//	}
 
 	bool OKImport = fbxImporter->Initialize(filename.c_str(), -1, fbxManager->GetIOSettings());
 	if (!OKImport)
@@ -255,12 +256,12 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 		outVertexVector[index - 3].bin[1] = binormal.y;
 		outVertexVector[index - 3].bin[2] = binormal.z;
 	}
-	// Animation Processing
+	
 
-	// int numStacks = fbxScene->GetSrcObjectCount(FBX_TYPE(FbxAnimStack));// GetSrcObjectCount(FBX_TYPE(FbxAnimStack)); i++);
+	// http://stackoverflow.com/questions/13566608/loading-skinning-information-from-fbx
 
 
-
+	
 	return BinaryOut(outVertexVector, (*fbxheader), _Filename);
 }
 

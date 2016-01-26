@@ -15,12 +15,12 @@
 #include "VertexShader.csh"
 // testing stuff, not going into the final engine as an include for this file
 #include "RenderMesh.h"
-#include "Assets\Cube.h"
+//#include "Assets\Cube.h"
 #include <ctime>
 //#include "RenderShape.h"
 //#include "RenderContext.h"
 
-
+#include "Animation.h"
 
 
 //class RenderSet; // forward calss declaration 
@@ -74,6 +74,8 @@ namespace RendererD3D
 		static std::vector<VERTEX> vertexvector;
 		static RenderSet renderSet;
 
+		static Animation* animation;
+
 		// objects 
 		//OBJECT cube;
 
@@ -100,7 +102,7 @@ namespace RendererD3D
 		static bool UpdateConstantBuffer(const Type& source, ID3D11Buffer * buffer);
 		static UINT GetNumberOf_Indecies(ID3D11Buffer * buffer, unsigned int DataSize);
 		
-		static void MakeCube();
+	
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		static void SetResolution(UINT _width, UINT _height);
 		bool InitializeDirectInput(HINSTANCE hInstance,  HWND hWnd);
