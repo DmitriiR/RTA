@@ -82,6 +82,7 @@ namespace RendererD3D
 	// objects 
 	XMMATRIX cubeWorld;
 	XMMATRIX model_world;
+	XMMATRIX gSkinnedMatrices[50];
 
 	std::vector<RenderMesh> renderMeshes;
 	Animation* Renderer::animation = nullptr; // object animation 
@@ -98,6 +99,7 @@ namespace RendererD3D
 	ID3D11Buffer				* m_CB_Camera = nullptr;
 	ID3D11Buffer				* m_CB_Cube = nullptr;
 	ID3D11Buffer				* m_CB_Model = nullptr;
+	ID3D11Buffer				* m_CB_Bones = nullptr;
 	//ID3D11Buffer				* m_CB_Scene = nullptr;
 	// CB buffer for direct light
 	ID3D11Buffer				* m_pCB_DirectLight = nullptr;
@@ -293,13 +295,15 @@ namespace RendererD3D
 		XMVECTOR worldUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 		camera.view_matrix       = DirectX::XMMatrixLookAtLH(eyePos, focusPos, worldUp);
 		camera.projection_matrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam_View_Angle), Aspect, 0.1f, 500.0f);
-		
+		//// Light
+		Dir_Light_pos = XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f);
+
+
+		//// Create Buffers
 		CreateConstantBuffer(camera, &m_CB_Camera, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(cubeWorld, &m_CB_Cube, D3D11_BIND_CONSTANT_BUFFER);
 		CreateConstantBuffer(model_world, &m_CB_Model, D3D11_BIND_CONSTANT_BUFFER);
-		//CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
-		// creates the constant buffer for the directional light
-		Dir_Light_pos = XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f);
+		CreateConstantBuffer(gSkinnedMatrices, &m_CB_Bones, D3D11_BIND_CONSTANT_BUFFER); // bones 
 		CreateConstantBuffer(Dir_Light_pos, &m_pCB_DirectLight, D3D11_BIND_CONSTANT_BUFFER);
 
 #if 0
@@ -309,14 +313,14 @@ namespace RendererD3D
 		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Ball\\NBA_BASKETBALL");
 #endif
 
-#if 1
+#if 0
 		// ball2 
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_diffuse_no_ao.dds", NULL, &CubesTexture);
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Ball2\\Basketball\\Textures\\basketball_dNORMAL.dds", NULL, &CubesTextureNormal);
 		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Ball2\\Basketball\\basketball",&VertexBufferModel);
+
 		CreateConstantBuffer(vertexvector, &VertexBufferModel, D3D11_BIND_VERTEX_BUFFER, &vertexvector);
 		modelBuffers.push_back(VertexBufferModel);
-
 		animation = animation->Initialize();
 	//	RenderMesh mesh;
 	//	mesh.SetDeffuseTexture(CubesTexture);
@@ -334,11 +338,15 @@ namespace RendererD3D
 		 hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Cat\\Catwoman\\Catwoman");
 #endif	
 
-#if 0
+#if 1
 		// Cube
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCubeNormal.dds", NULL, &CubesTextureNormal);
-		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump"); 
+		hr = fbxstuff.LoadFBX(vertexvector, "Assets\\Box_Jump\\Box_Jump", &VertexBufferModel);
+		
+		CreateConstantBuffer(vertexvector, &VertexBufferModel, D3D11_BIND_VERTEX_BUFFER, &vertexvector);
+		modelBuffers.push_back(VertexBufferModel);
+		animation = animation->Initialize();
 #endif		
 
 #if 0
@@ -367,27 +375,10 @@ namespace RendererD3D
 		
 		Renderer::theContextPtr->OMSetRenderTargets(1, &theRenderTargetViewPtr, Renderer::theDepthStencilViewPtr);
 		Renderer::theContextPtr->ClearDepthStencilView(Renderer::theDepthStencilViewPtr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 1);
-
-		/*
-		if (renderSet.headPtr)
-		{
-			Renderer::Render(renderSet);
-		}
-		*/
-
-		//RenderSet set;
-		//RenderNode node;
-		//RenderMesh mesh;
 		
-			//set.AddRenderNode(&node);
+		
 			//**********************************      Light      ***************************************\
 			// directional light
-		//	diectionalLight = XMVectorSet(XMVectorGetX(Dir_Light_pos) + shiftLight,
-		//		XMVectorGetY(Dir_Light_pos),
-		//		XMVectorGetZ(Dir_Light_pos),
-		//		0.0f);
-		//	UpdateConstantBuffer(diectionalLight, m_pCB_DirectLight);
-		//	deviceContext->VSSetConstantBuffers(3, 1, &m_pCB_DirectLight);
 			XMVECTOR diectionalLight = XMVectorSet(	XMVectorGetX(Dir_Light_pos),
 													XMVectorGetY(Dir_Light_pos),
 													XMVectorGetZ(Dir_Light_pos),
@@ -405,7 +396,7 @@ namespace RendererD3D
 			tempMatrix = tempMatrix * XMMatrixRotationY((float)deltaTime * 0.1f);
 			
 			///tempMatrix = tempMatrix * XMMatrixRotationAxis(camUp, 0.0f);
-			tempMatrix = tempMatrix * XMMatrixTranslation(0.0f, 0.0f, 50.0f);
+			tempMatrix = tempMatrix * XMMatrixTranslation(0.0f, 0.0f, 5.0f);
 			model_world = tempMatrix;
 
 			///// Input Input-Assembler 
@@ -423,7 +414,7 @@ namespace RendererD3D
 			Renderer::UpdateConstantBuffer(camera, m_CB_Camera);											    //<< view, projection
 			Renderer::theContextPtr->VSSetConstantBuffers(0, 1, &m_CB_Model);
 			Renderer::theContextPtr->VSSetConstantBuffers(1, 1, &m_CB_Camera);
-
+			Renderer::theContextPtr->VSSetConstantBuffers(2, 1, &m_CB_Bones);							// Bone matrices
 			///// Hull Shader 	/// Tesselator	/// Domain Shader	/// Geometry Shader
 			///// Rasterizer
 			Renderer::theContextPtr->RSSetState(CWcullMode);
@@ -439,7 +430,7 @@ namespace RendererD3D
 			Renderer::theContextPtr->Draw(uiNumElements, 0);													/// Draw without index
 		//  \ ___________________________________________________________________________________________/
 
-	}
+	} // end run
 
 
 
@@ -707,7 +698,7 @@ namespace RendererD3D
 		// involves model
 		ReleaseCOM(VertexBufferModel);
 		ReleaseCOM(m_CB_Model);
-
+		ReleaseCOM(m_CB_Bones);
 		// release any lights
 		ReleaseCOM(m_pCB_DirectLight);
 		//direct input

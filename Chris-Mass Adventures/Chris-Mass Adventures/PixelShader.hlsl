@@ -39,7 +39,7 @@ float4 CalcPointLight(float3 toLight, float3 surNormals, float4 surColor, float4
 	float4 returnColor;
 
 	float min_dist = 1.0f;
-	float max_dist = 30.0f;
+	float max_dist = 15.0f;
 	float distance = length(toLight);
 	float strength = 1 - saturate((distance - min_dist) / (max_dist - min_dist));
 

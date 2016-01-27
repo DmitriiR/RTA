@@ -67,14 +67,15 @@ VS_OUTPUT main(V_IN input)
 	output.wPos = mul(float4(input.pos.xyz, 1.0f), worldMatrix);
 	output.TexCoord = float2(input.uvm.xy);
 
+	/*
 	// skinned animation recalculation
-	//float4x4 skinMat = gSkinnedMatrices[input.bone.x] * input.weights.x;
-	//skinMat += gSkinnedMatrices[input.bone.y] * input.weights.y;
-	//skinMat += gSkinnedMatrices[input.bone.z] * input.weights.z;
-	//skinMat += gSkinnedMatrices[input.bone.w] * input.weights.w;
-	//output.pos = mul(float4(input.pos, 1.0), skinMat);
-	//output.normal = mul(float4(input.nrm, 0.0), skinMat).xyz;
-
+	float4x4 skinMat = gSkinnedMatrices[input.bone.x] * input.weights.x;
+	skinMat += gSkinnedMatrices[input.bone.y] * input.weights.y;
+	skinMat += gSkinnedMatrices[input.bone.z] * input.weights.z;
+	skinMat += gSkinnedMatrices[input.bone.w] * input.weights.w;
+	output.pos = mul(float4(input.pos, 1.0), skinMat);
+	output.normal = mul(float4(input.nrm, 0.0), skinMat).xyz;
+	*/
 
 
 	// for the normals
