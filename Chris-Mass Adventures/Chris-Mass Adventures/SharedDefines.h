@@ -6,6 +6,7 @@
 #include "float3.h"
 #include "float4x4.h"
 
+using namespace DirectX;
 
 typedef unsigned int		uint;
 typedef DirectX::XMFLOAT2	float2;

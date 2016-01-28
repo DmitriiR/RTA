@@ -39,7 +39,7 @@ float4 CalcPointLight(float3 toLight, float3 surNormals, float4 surColor, float4
 	float4 returnColor;
 
 	float min_dist = 1.0f;
-	float max_dist = 15.0f;
+	float max_dist = 18.0f;
 	float distance = length(toLight);
 	float strength = 1 - saturate((distance - min_dist) / (max_dist - min_dist));
 
@@ -55,7 +55,7 @@ float4 main( P_IN input ) : SV_TARGET
 	baseColorNormalMap.xyz = (baseColorNormalMap * 2) - 1.0f;
 
 	float4 finalColor = baseColor;
-	float3 toLight = Dir_Light_Position - input.wPos.xyz;
+	float3 toLight = Dir_Light_Position.xyz - input.wPos.xyz;
 	float3 norm = normalize(input.nrm);
 
 	// normal mapping
