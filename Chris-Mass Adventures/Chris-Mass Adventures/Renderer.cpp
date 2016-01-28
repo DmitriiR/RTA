@@ -377,6 +377,8 @@ namespace RendererD3D
 		Renderer::theContextPtr->ClearDepthStencilView(Renderer::theDepthStencilViewPtr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 1);
 		
 		
+
+
 			//**********************************      Light      ***************************************\
 			// directional light
 			XMVECTOR diectionalLight = XMVectorSet(	XMVectorGetX(Dir_Light_pos),
@@ -386,6 +388,11 @@ namespace RendererD3D
 			UpdateConstantBuffer(diectionalLight, m_pCB_DirectLight);
 			Renderer::theContextPtr->PSSetConstantBuffers(0, 1, &m_pCB_DirectLight);
 	
+			
+			//**********************************   Animation  ******************************************\
+			// directional light
+			animation->Update(deltaTime);
+
 	
 			//**********************************      Model      ***************************************\
 		   /// Pipeline																				   |

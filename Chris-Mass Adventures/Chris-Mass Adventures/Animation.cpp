@@ -59,3 +59,27 @@ void Animation::AddClip(Clip * _clip)
 		}
 	
 }
+
+
+void Animation::Update(double _time)
+{
+	//Interpolator::GetInstance()->AddTime((float)_time);
+	interprolator.AddTime((float)_time);
+	Clip* clip = interprolator.GetClip();
+
+	if (clipPtr != 0)
+	{
+		interprolator.Process();
+
+		auto& interpolatedBones = interprolator.GetInterpolatedBones();
+		auto& bindTransforms = clipPtr->GetBindTransforms();
+		unsigned int boneCount = clipPtr->GetNumBones();
+
+		for (unsigned int i = 0; i < boneCount; ++i)
+		{
+			const AnimatedBone* animatedBone = interpolatedBones[i].GetAnimatedBone();
+			const InterpolatedBone  interpolatedBone = interpolatedBones[i];
+			flatMats.push_back(interpolatedBone.GetLocalTransform());
+		}
+	}
+}

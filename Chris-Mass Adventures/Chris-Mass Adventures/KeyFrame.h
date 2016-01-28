@@ -10,7 +10,7 @@ class KeyFrame
 	float keyTime;
 
 	// The representation of the animation at the keyTime
-	std::vector<VERTEX *> vertices; //[NumberOfVertices]; Vertex vertices[NumberOfVertices];
+	//std::vector<VERTEX *> vertices; //[NumberOfVertices]; Vertex vertices[NumberOfVertices];
 
 	// The representation of the animated “skeleton” at the keyTime
 	std::vector<Float4x4> bones;

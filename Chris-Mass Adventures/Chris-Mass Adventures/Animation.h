@@ -7,6 +7,8 @@
 class Animation
 {
 private:
+	
+	Interpolator interprolator;
 
 	float duration;
 
@@ -14,6 +16,7 @@ private:
 	std::vector<KeyFrame>  keyFrames;
 	std::vector<Float4x4> flatMats;
 
+	Clip * clipPtr = nullptr; // added to be initialized
 	
 public:
 	Animation();
@@ -26,13 +29,21 @@ public:
 	inline void SetDuration(float _duration){ duration = _duration; }
 
 	void AddClip(Clip* _clip);
+	void Update(double _time);
 	
 	Animation * Initialize()
 	{
 		Animation * anim = new Animation();
+		
+		anim->LoadState(); // this inits the animation clip
 		return anim;
 	}
-
+	
+	void Animation::LoadState()
+	{
+		AddClip(clipPtr);
+		interprolator.SetClip(clipPtr);
+	}
 
 };
 
