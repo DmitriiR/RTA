@@ -4,9 +4,9 @@
 
 class Clip
 {
-	float duration;
+	float duration = 0.0f;
 
-	unsigned int numBones;
+	unsigned int numBones = 0;
 
 	std::vector<AnimatedBone> bones;
 	std::vector<Float4x4> bindTransforms;
@@ -15,8 +15,8 @@ class Clip
 
 
 public:
-	static Clip* Load(const char *fileName, const char *ignored = 0);
-
+	//static Clip* Load(const char *fileName, const char *ignored = 0);
+	static Clip* Load();
 
 	float GetDuration()const { return duration; }
 	unsigned int GetNumBones()const { return numBones; }

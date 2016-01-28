@@ -46,7 +46,7 @@ void Animation::AddClip(Clip * _clip)
 				}
 				else
 				{
-					//flatMats[i] = localMat;
+					flatMats[i] = localMat;
 				//	EDMath::Multiply(flatMats[i], localMat, GetTransform()->GetWorldMatrix());
 				//	gameObj->GetTransform()->SetLocalMatrix(flatMats[i]);
 				//	gameObj->GetTransform()->SetParent(GetTransform());
@@ -83,3 +83,4 @@ void Animation::Update(double _time)
 		}
 	}
 }
+

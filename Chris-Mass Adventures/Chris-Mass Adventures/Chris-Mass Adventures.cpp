@@ -72,7 +72,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		
 			/////////////////////////////////////////////////////////////////////////////////////////////
 			// OUR Primary Loop
-			rendererInstance->DetectInput();
+		    rendererInstance->DetectInput(globalHWND);
 			rendererInstance->Run(deltatime);
 			rendererInstance->Present();
 		
@@ -126,7 +126,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    HWND hWnd;
 
    hInst = hInstance; // Store instance handle in our global variable
-
    // My window Addition 
    RECT window_size = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
    AdjustWindowRect(&window_size, WS_OVERLAPPEDWINDOW, true);
@@ -147,6 +146,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    //rendererInstance->MakeCube();
    /////////////////////////////////////////////////////////////////////////////////////////////
 
+   globalHWND = hWnd;
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 

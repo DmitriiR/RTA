@@ -1,9 +1,10 @@
 #pragma once
-#include "KeyFrame.h"
+//#include "KeyFrame.h"
 #include "SharedDefines.h"
 #include "Interpolator.h"
 #include "RenderMesh.h"
 #include "Clip.h"
+
 class Animation
 {
 private:
@@ -13,14 +14,14 @@ private:
 	float duration;
 
 	// We will have to represent the animation through data…
-	std::vector<KeyFrame>  keyFrames;
+	std::vector<KeyFrame> keyFrames;
 	std::vector<Float4x4> flatMats;
 
 	Clip * clipPtr = nullptr; // added to be initialized
 	
 public:
 	Animation();
-	~Animation(){ };
+	~Animation(){  };
 	
 	// Setters 
 	inline float GetDuration(){ return duration; }
@@ -34,15 +35,25 @@ public:
 	Animation * Initialize()
 	{
 		Animation * anim = new Animation();
-		
 		anim->LoadState(); // this inits the animation clip
 		return anim;
 	}
 	
-	void Animation::LoadState()
+	inline void Animation::LoadState()
 	{
+		clipPtr = clipPtr->Load();
 		AddClip(clipPtr);
 		interprolator.SetClip(clipPtr);
+	}
+	
+	inline void Release()
+	{
+		if (clipPtr)
+		{
+			delete clipPtr;
+			clipPtr = nullptr;
+		}
+		delete this; 
 	}
 
 };

@@ -106,7 +106,7 @@ namespace RendererD3D
 		static void Initialize(HWND hWnd, UINT resWidth, UINT resHeight);
 		static void SetResolution(UINT _width, UINT _height);
 		bool InitializeDirectInput(HINSTANCE hInstance,  HWND hWnd);
-		void DetectInput();
+		void DetectInput(HWND hWnd);
 		void UpdateCamera();
 		XMMATRIX PerspectiveProjectionMatrix(float FOV, float zFar, float zNear, float aspect);
 		float DegToRad(float deg);

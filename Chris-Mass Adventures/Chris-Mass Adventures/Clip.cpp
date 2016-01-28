@@ -5,11 +5,11 @@
 using namespace EDMath;
 
 
-Clip* Clip::Load(const char *fileName, const char *ignored)
+Clip* Clip::Load()
 {
 	//LOADING CLIP HERE 
-	Clip *newAnim = new Clip;
-	/* 
+	Clip *newClip = new Clip;
+	/*
 	string temp = ContentManager::theContentPath;
 	temp += fileName;
 
@@ -118,7 +118,7 @@ Clip* Clip::Load(const char *fileName, const char *ignored)
 
 	delete[] animationName;
 	*/
-	return newAnim;
+	return newClip;
 }
 
 void Clip::AddKeyFrames(AnimatedBone &bone, std::vector<KeyFrame> &fileKeyFrames)

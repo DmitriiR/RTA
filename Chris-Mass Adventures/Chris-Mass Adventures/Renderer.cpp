@@ -347,6 +347,7 @@ namespace RendererD3D
 		CreateConstantBuffer(vertexvector, &VertexBufferModel, D3D11_BIND_VERTEX_BUFFER, &vertexvector);
 		modelBuffers.push_back(VertexBufferModel);
 		animation = animation->Initialize();
+
 #endif		
 
 #if 0
@@ -520,7 +521,7 @@ namespace RendererD3D
 		return uiNumElements;
 	}
 
-	void Renderer::DetectInput()
+	void Renderer::DetectInput(HWND hWnd)
 	{
 		if (!DIKeyboard || !DIMouse)
 		{
@@ -543,8 +544,8 @@ namespace RendererD3D
 		DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrState);
 		DIKeyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 
-		//if (keyboardState[DIK_ESCAPE] & 0x80)
-		//	PostMessage(window, WM_DESTROY, 0, 0);
+		if (keyboardState[DIK_ESCAPE] & 0x80)
+			PostMessage(hWnd, WM_DESTROY, 0, 0);
 
 		//	float speed = 15.0f * time;
 
@@ -659,8 +660,6 @@ namespace RendererD3D
 		camTarget = camPosition + camTarget;
 		//
 		XMVECTOR camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-		
-		
 		camera.view_matrix = XMMatrixLookAtLH(camPosition, camTarget, camUp);
 	
 	}
@@ -675,50 +674,42 @@ namespace RendererD3D
 		ReleaseCOM(theDepthStencilBufferPtr);
 		ReleaseCOM(theRenderTargetViewPtr);
 		ReleaseCOM(theBackBufferPtr);
-		//ReleaseCOM(thePerObjectCBuffer);
-		//ReleaseCOM(thePerSkinnedObjectCBuffer);
-		//ReleaseCOM(theDepthStencilSRVPtr);
 		ReleaseCOM(theSwapChainPtr);
 		ReleaseCOM(theContextPtr);
 		ReleaseCOM(theDevicePtr);
-
-		ReleaseCOM(m_CB_Camera);
-		ReleaseCOM(IndexBufferCube);
-		ReleaseCOM(VertBufferCube);
-		ReleaseCOM(pInputLayout);
-
-		ReleaseCOM(VS_Default);
-		ReleaseCOM(PS_Default);
-
-		ReleaseCOM(m_CB_Camera);
-		ReleaseCOM(m_CB_Cube);
-		ReleaseCOM(CubesTextureNormal);
-
+		
+		// renderer
 		ReleaseCOM(CCWcullMode);
 		ReleaseCOM(CWcullMode);
 		ReleaseCOM(CubesTexSamplerState);
-		ReleaseCOM(CubesTexture);
-		//ReleaseCOM(renderTargetTextureMap);
-		//ReleaseCOM(renderTargetViewMap);
 		ReleaseCOM(Transparency);
-
-		// involves model
+		ReleaseCOM(pInputLayout);
+		ReleaseCOM(animation);
+		
+		// constant buffers 
+		ReleaseCOM(m_CB_Camera);
+		ReleaseCOM(m_CB_Cube);
+		ReleaseCOM(IndexBufferCube);
+		ReleaseCOM(VertBufferCube);
 		ReleaseCOM(VertexBufferModel);
 		ReleaseCOM(m_CB_Model);
 		ReleaseCOM(m_CB_Bones);
-		// release any lights
 		ReleaseCOM(m_pCB_DirectLight);
-		//direct input
+
+		// shaders 
+		ReleaseCOM(VS_Default);
+		ReleaseCOM(PS_Default);
+
+		// textures 
+		ReleaseCOM(CubesTextureNormal);
+		ReleaseCOM(CubesTexture);
+		
+		// direct input 
 		if (DIKeyboard)		DIKeyboard->Unacquire();
 		if (DIMouse)		DIMouse->Unacquire();
-		if (DirectInput)	DirectInput->Release();
-
+		//if (DirectInput)	DirectInput->Release();
 		ReleaseCOM(DIKeyboard);
 		ReleaseCOM(DIMouse);
-
-		delete animation;
-		//ReleaseCOM(DirectInput);
-
 	}
 
 	bool Renderer::InitializeDirectInput(HINSTANCE hInstance, HWND hWnd)
@@ -769,11 +760,6 @@ namespace RendererD3D
 		pr.m[2][0] = 0.0f;		pr.m[2][1] = 0.0f;		pr.m[2][2] = zFar / (zFar - zNear);				pr.m[2][3] = 0.0f;
 		pr.m[3][0] = 0.0f;		pr.m[3][1] = 0.0f;		pr.m[3][2] = -(zFar * zNear) / (zFar - zNear);	pr.m[3][3] = 0.0f;
 
-		//ProjectionMatrix.r[0] = { XScale, 0.0f, 0.0f, 0.0f };
-		//ProjectionMatrix.r[1] = { 0.0f, YScale, 0.0f, 0.0f };
-		//ProjectionMatrix.r[2] = { 0.0f, 0.0f, zFar / (zFar - zNear), 1.0f };
-		//ProjectionMatrix.r[3] = { 0.0f, 0.0f, -(zFar * zNear) / (zFar - zNear), 0.0f };
-
 		ProjectionMatrix = XMLoadFloat4x4(&pr);
 
 		return ProjectionMatrix;
@@ -782,6 +768,5 @@ namespace RendererD3D
 	{
 		return (deg * (3.14f / 180.0f));
 	}
-
 	
 }
