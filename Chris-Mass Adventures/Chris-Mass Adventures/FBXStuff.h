@@ -29,7 +29,7 @@ public:
 
 	Skeleton mSkeleton;
 	std::unordered_map<unsigned int, CtrlPoint*> mControlPoints;
-	bool mHasAnimation;
+	bool mHasAnimation = true;
 	std::string mAnimationName;
 	FbxLongLong mAnimationLength;
 
@@ -62,4 +62,5 @@ public:
 	void ProcessJointsAndAnimations(FbxNode* inNode);
 	unsigned int FindJointIndexUsingName(const std::string& inJointName);
 	void ProcessGeometry(FbxNode* inNode);
+	void CleanupFbxManager();
 };

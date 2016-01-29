@@ -359,6 +359,9 @@ namespace RendererD3D
 		modelBuffers.push_back(VertexBufferModel);
 		animation = animation->Initialize();
 
+		int numBones = fbxstuff.mSkeleton.mJoints.size();
+
+
 #endif		
 
 #if 0
@@ -715,6 +718,7 @@ namespace RendererD3D
 		ReleaseCOM(CubesTextureNormal);
 		ReleaseCOM(CubesTexture);
 		
+		fbxstuff.CleanupFbxManager();
 		// direct input 
 		if (DIKeyboard)		DIKeyboard->Unacquire();
 		if (DIMouse)		DIMouse->Unacquire();

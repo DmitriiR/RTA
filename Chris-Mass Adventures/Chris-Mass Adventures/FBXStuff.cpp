@@ -262,10 +262,12 @@ HRESULT FBXStuff::LoadFBX(std::vector<VERTEX>& outVertexVector, const char * _Fi
 
 	if (fbxRootNode)
 	{
-	//	ProcessGeometry(fbxRootNode);
+		ProcessGeometry(fbxRootNode);
 	}
-
 	
+	
+
+
 	return BinaryOut(outVertexVector, (*fbxheader), _Filename);
 }
 
@@ -451,8 +453,9 @@ HRESULT FBXStuff::BinaryIn(std::vector<VERTEX>&outVertexVector, FbxIOFileHeaderI
 
 void FBXStuff::ProcessSkeletonHierarchy(FbxNode* inRootNode)
 {
+	int numChildren = inRootNode->GetChildCount();
 
-	for (int childIndex = 0; childIndex < inRootNode->GetChildCount(); ++childIndex)
+	for (int childIndex = 0; childIndex < numChildren; ++childIndex)
 	{
 		FbxNode* currNode = inRootNode->GetChild(childIndex);
 		ProcessSkeletonHierarchyRecursively(currNode, 0, 0, -1);
@@ -514,6 +517,25 @@ void FBXStuff::ProcessJointsAndAnimations(FbxNode* inNode)
 			// Get animation information
 			// Now only supports one take
 			FbxAnimStack * test;
+
+			FbxAnimStack* currAnimStack = fbxScene->GetCurrentAnimationStack();
+			FbxString animStackName = currAnimStack->GetName();
+			mAnimationName = animStackName.Buffer();
+			FbxTakeInfo* takeInfo = fbxScene->GetTakeInfo(animStackName);
+			FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+			FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+			mAnimationLength = end.GetFrameCount(FbxTime::eFrames24) - start.GetFrameCount(FbxTime::eFrames24) + 1;
+			Keyframe** currAnim = &mSkeleton.mJoints[currJointIndex].mAnimation;
+			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames24); i <= end.GetFrameCount(FbxTime::eFrames24); ++i)
+			{
+				FbxTime currTime;
+				currTime.SetFrame(i, FbxTime::eFrames24);
+				*currAnim = new Keyframe();
+				(*currAnim)->mFrameNum = i;
+				FbxAMatrix currentTransformOffset = inNode->EvaluateGlobalTransform(currTime) * geometryTransform;
+				(*currAnim)->mGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
+				currAnim = &((*currAnim)->mNext);
+			}
 #if 0   // old API reference
 			FbxAnimStack* currAnimStack = fbxScene->GetSrcObject<FbxAnimStack>(0);
 			FbxString animStackName = currAnimStack->GetName();
@@ -553,6 +575,7 @@ void FBXStuff::ProcessJointsAndAnimations(FbxNode* inNode)
 		}
 	}
 }
+
 
 void FBXStuff::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex)
 {
@@ -595,6 +618,7 @@ void FBXStuff::ProcessGeometry(FbxNode* inNode)
 			ProcessControlPoints(inNode);
 			if (mHasAnimation)
 			{
+				ProcessSkeletonHierarchy(fbxScene->GetRootNode());
 				ProcessJointsAndAnimations(inNode);
 			}
 			//	ProcessMesh(inNode);
@@ -622,3 +646,22 @@ unsigned int FBXStuff::FindJointIndexUsingName(const std::string& inJointName)
 
 	throw std::exception("Skeleton information in FBX file is corrupted.");
 }
+
+void FBXStuff::CleanupFbxManager()
+{
+	//	fbxScene->Destroy();
+	//fbxManager->Destroy();
+
+	//mTriangles.clear();
+
+	//mVertices.clear();
+
+	//	mSkeleton.mJoints.clear();
+
+	//for (auto itr = mMaterialLookUp.begin(); itr != mMaterialLookUp.end(); ++itr)
+//	{
+//		delete itr->second;
+//	}
+//	mMaterialLookUp.clear();
+}
+
