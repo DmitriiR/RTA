@@ -2,8 +2,8 @@
 #include "fbxsdk.h"
 #include "d3d11.h"
 #include "SharedDefines.h"
-#include <DirectXMath.h>
-#include "DirectXMath.h"
+//#include <DirectXMath.h>
+//#include "DirectXMath.h"
 #include "FBXExporterHelpers.h"
 #include <unordered_map>
 //#include "Material.h"

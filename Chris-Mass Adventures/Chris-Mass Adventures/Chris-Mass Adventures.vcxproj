@@ -95,7 +95,6 @@
     <ClInclude Include="Chris-Mass Adventures.h" />
     <ClInclude Include="Clip.h" />
     <ClInclude Include="DDSTextureLoader.h" />
-    <ClInclude Include="FBXExporter.h" />
     <ClInclude Include="FBXExporterHelpers.h" />
     <ClInclude Include="FBXStuff.h" />
     <ClInclude Include="float3.h" />
@@ -128,7 +127,6 @@
     <ClCompile Include="Chris-Mass Adventures.cpp" />
     <ClCompile Include="Clip.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
-    <ClCompile Include="FBXExporter.cpp" />
     <ClCompile Include="FBXStuff.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4x4.cpp" />

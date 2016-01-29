@@ -124,8 +124,8 @@ void FBXExporter::ProcessGeometry(FbxNode* inNode)
 				ProcessJointsAndAnimations(inNode);
 			}
 			ProcessMesh(inNode);
-			AssociateMaterialToMesh(inNode);
-				//												ProcessMaterials(inNode);  << REMOVED BECAUSE WE ARE USING OUR OWN 
+			//AssociateMaterialToMesh(inNode);
+				//	ProcessMaterials(inNode);  << REMOVED BECAUSE WE ARE USING OUR OWN 
 			break;
 		}
 	}

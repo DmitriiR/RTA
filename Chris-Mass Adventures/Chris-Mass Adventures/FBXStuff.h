@@ -4,6 +4,8 @@
 #include "d3d11.h"
 #include <DirectXMath.h>
 #include "SharedDefines.h"
+#include <unordered_map>
+#include "Utilities.h"
 //#include <vector>
 //#include "Assets\Cube.h"
 
@@ -16,6 +18,7 @@ using namespace DirectX;
 class FBXStuff
 {
 public:
+
 	FbxManager* fbxManager = nullptr;
 	FbxIOSettings* fbxIOSettings = nullptr;
 	FbxScene* fbxScene = nullptr;
@@ -24,6 +27,11 @@ public:
 
 	// animation
 
+	Skeleton mSkeleton;
+	std::unordered_map<unsigned int, CtrlPoint*> mControlPoints;
+	bool mHasAnimation;
+	std::string mAnimationName;
+	FbxLongLong mAnimationLength;
 
 	struct MyVertex
 	{
@@ -48,4 +56,10 @@ public:
 	static void CalculateTangentBinormal(VERTEX vertex1, VERTEX vertex2, VERTEX vertex3, XMFLOAT3* tangent, XMFLOAT3* binormal);
 	static void CalculateNormal(XMFLOAT3 tangent, XMFLOAT3 binormal, XMFLOAT3& normal);
 
+	void ProcessSkeletonHierarchy(FbxNode* inRootNode);
+	void ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);
+	void ProcessControlPoints(FbxNode* inNode);
+	void ProcessJointsAndAnimations(FbxNode* inNode);
+	unsigned int FindJointIndexUsingName(const std::string& inJointName);
+	void ProcessGeometry(FbxNode* inNode);
 };

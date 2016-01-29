@@ -9,7 +9,7 @@
 //#include "Assets\Cube.h"
 #include "FBXStuff.h"
 
-#include "FBXExporter.h"
+//#include "FBXExporter.h"
 
 
 
@@ -345,11 +345,11 @@ namespace RendererD3D
 
 
 		
-			 FBXExporter* myExporter = new FBXExporter();
-			 myExporter->Initialize();
-			 myExporter->LoadScene("Assets\\Box_Jump\\Box_Jump.bbx", "Assets\\Box_Jump\\Box_Jump2.bin");
-			 myExporter->ExportFBX();
-		 
+			// FBXExporter* myExporter = new FBXExporter();
+			// myExporter->Initialize();
+			// myExporter->LoadScene("Assets\\Box_Jump\\Box_Jump.bbx", "Assets\\Box_Jump\\Box_Jump2.bin");
+			// myExporter->ExportFBX();
+			 
 
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCube.dds", NULL, &CubesTexture);
 		hr = CreateDDSTextureFromFile(Renderer::theDevicePtr, L"Assets\\Box_Jump\\TestCubeNormal.dds", NULL, &CubesTextureNormal);
